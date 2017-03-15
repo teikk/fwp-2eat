@@ -14,6 +14,7 @@ class FWPR_Payment {
 	}
 	public static function init(){
 		$instance = self::get_instance();
+
 		add_action( 'fwpr/payment-select', array( $instance,'select' ) );
 		add_action( 'fwpr/payment/completed', array( $instance,'processCompleted' ) );
 		add_filter( 'acf/update_value/name=payment_status', array($instance,'statusChanged'), 10, 3 );
@@ -78,6 +79,10 @@ class FWPR_Payment {
 		return $value;
 	}
 
+	/**
+	 * Fire when payment process is completed
+	 * @return void Clear the cart
+	 */
 	public function processCompleted(){
 		FWPR_Cart::get_instance()->clear();
 	}
@@ -89,6 +94,11 @@ class FWPR_Payment {
 		$response = $this->pay($data);
 		wp_send_json( $response );
 	}
+
+	/**
+	 * Generate default payment types
+	 * @return void Echoes radio buttons for payment type
+	 */
 	public function select(){
 		$select = '';
 		foreach ($this->types as $key => $type) {
