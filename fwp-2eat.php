@@ -53,10 +53,16 @@ class FWPR_Food {
 	public function scripts(){
 		wp_register_script( 'fwpr-plugins', FWPR_URI . 'assets/plugins.js', array( 'jquery' ), false, true );
 		wp_register_script( 'fwpr-app', FWPR_URI . 'assets/app.js', array( 'jquery' ), false, true );
+		wp_register_script( 'fwpr-bd', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js', array( 'jquery' ), false, true );
 		wp_enqueue_script( 'fwpr-plugins' );
+		wp_enqueue_script( 'fwpr-bd' );
 		wp_enqueue_script( 'fwpr-app' );
+
+		wp_enqueue_style( 'fwpr-bd-css', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css' );
+		$options = FWPR_Options::get_instance()->get_options();
 		wp_localize_script( 'fwpr-plugins', 'fwpr', array(
-			'ajaxurl' => admin_url('admin-ajax.php')
+			'ajaxurl' => admin_url('admin-ajax.php'),
+			'maxForTomorrow' => $options['global']['max_for_tomorrow']
 			) );	
 	}
 	public function theme_setup(){
@@ -66,5 +72,6 @@ class FWPR_Food {
 	}
 		
 }
+
 
 require_once( FWPR_DIR . 'load.php' );
