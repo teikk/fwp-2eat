@@ -87,6 +87,14 @@ class FWPR_Options {
 			'description' => __('Tekst wyświetlany użytkownikowi jako czas wykonania zamówienia','fwpr')
 			) );
 
+		add_settings_field( 'fwpr_max_for_tomorrow', __('Maksymalna godzina zamówienia na jutro','fwpr'), array($this,'global_fields'), $this->page_slug, 'fwpr_global', array(
+			'label_for'         => 'fwpr_max_for_tomorrow',
+			'name' => 'max_for_tomorrow',
+			'group' => 'global',
+			'type' => 'text',
+			'description' => __('Tekst wyświetlany użytkownikowi jako czas wykonania zamówienia','fwpr')
+			) );
+
 		add_settings_field( 'fwpr_return_url', __('Strona powrotu','fwpr'), array($this,'global_fields'), $this->page_slug, 'fwpr_global', array(
 			'label_for'         => 'fwpr_return_url',
 			'func' => 'page_select',
