@@ -42,6 +42,17 @@
 					$('#fwpr-cart').html(response);
 					$(document).triggerHandler('fwpr/cart/cartRefreshed',response);
 				});
+			},
+			pay : function(){
+				$.post( fwpr.ajaxurl, {
+					action: 'fwpr_pay',
+					data: args.data
+				},
+				function(response){
+					console.log(response);
+					$('#ajax-debug').html(response);
+					$(document).triggerHandler('fwpr/payment/completed',response);
+				});
 			}
 		}
 		methods[method].call(this);
