@@ -43,7 +43,7 @@ class FWPR_Cart {
 				$this->removeItem( $data['cart_item'] );
 				break;
 			case 'showCart':
-				echo fwpr_cart();
+				fwpr_template('cart/cart-content');
 				break;
 			default:
 				# code...
@@ -75,5 +75,32 @@ class FWPR_Cart {
 			'product' => $product_id,
 			'variant' => $variant
 			);
+	}
+
+	public function getVariant($product_id, $variant) {
+		$variants = get_field('fwpr_product_variants',$product_id);
+		return $variants[$variant];
+	}
+	public function getTotals() {
+		$totals = 0;
+		if( empty( $this->items ) ) {
+			return $totals;
+		}
+		foreach ($this->items as $key => $item) {
+			if( $item['variant'] !== 'false' ) {
+				$variant = $this->getVariant( $item['product'], $item['variant'] );
+				$totals += $variant['price'];
+			} else {
+				$isDiscounted = get_field('fwpr_product_discounted',$item['product']);
+				$price = (!$isDiscounted) ? get_field( 'fwpr_product_price', $item['product']) : get_field( 'fwpr_product_price_discount', $item['product']);
+				$totals += $price;
+			}
+		}
+		return $totals;
+	}
+
+	public function clear(){
+		$this->items = array();
+		$_SESSION['fwpr_cart'] = $this->items;
 	}
 }
