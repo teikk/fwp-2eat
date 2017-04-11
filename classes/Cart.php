@@ -67,6 +67,9 @@ class FWPR_Cart {
 		if( $user_id == 0 ) {
 			$user_id = get_current_user_id();
 		}
+		if( empty( $quantity ) ) {
+			$quantity = 1;
+		}
 		for ($i=1; $i <= $quantity; $i++) { 
 			$_SESSION['fwpr_cart'][] = array(
 			'product' => $product_id,
