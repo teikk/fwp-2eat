@@ -36,7 +36,7 @@ class FWPR_Cart {
 		switch ($method) {
 			case 'addToCart':
 				$data = fwpr_parse($_POST['data']);
-				$this->addItem( $data['product_id'], $data['variant'] );
+				$this->addItem( $data['product_id'], $data['variant'], $data['date'],$data['quantity'] );
 				break;
 			case 'removeFromCart':
 				$data = fwpr_parse($_POST['data']);
@@ -67,14 +67,18 @@ class FWPR_Cart {
 		$_SESSION['fwpr_cart'] = $this->items;
 	}
 
-	public function addItem($product_id, $variant, $user_id = 0 ){
+	public function addItem($product_id, $variant, $date, $quantity = 1, $user_id = 0 ){
 		if( $user_id == 0 ) {
 			$user_id = get_current_user_id();
 		}
-		$_SESSION['fwpr_cart'][] = array(
+		for ($i=1; $i <= $quantity; $i++) { 
+			$_SESSION['fwpr_cart'][] = array(
 			'product' => $product_id,
-			'variant' => $variant
+			'variant' => $variant,
+			'date' => $date
 			);
+		}	
+
 	}
 
 	public function getVariant($product_id, $variant) {
