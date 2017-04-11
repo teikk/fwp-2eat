@@ -23,3 +23,10 @@
 		return ob_get_clean();
 	}
 	add_shortcode( 'fwpr_order_form', 'fwpr_order_form' );
+
+	function fwpr_admin_page(){
+		ob_start();
+		fwpr_template('admin-page/admin');
+		return ob_get_clean();
+	}
+	add_shortcode( 'fwpr_admin_page', 'fwpr_admin_page' );
