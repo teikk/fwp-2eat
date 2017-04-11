@@ -9,20 +9,34 @@
 			<?php 
 				$variants = get_field( 'fwpr_product_variants' );
 			 ?>
+
 			 <?php if( !empty($variants) ): ?>	
-			 	<select name="variant">
-				 <?php foreach ($variants as $key => $variant):?>
-				 	<option value="<?php echo $key; ?>"><?php echo $variant['name']; ?> - <?php echo $variant['price']; ?> PLN, Posiłków: <?php echo $variant['dinners']; ?> </option>
-				 <?php endforeach;?>
-				 </select>
+			 	<p>
+				 	<select class="form-control" name="variant">
+						<?php foreach ($variants as $key => $variant):?>
+						<option value="<?php echo $key; ?>"><?php echo $variant['name']; ?> - <?php echo $variant['price']; ?> PLN, Posiłków: <?php echo $variant['dinners']; ?> </option>
+						<?php endforeach;?>
+					</select>
+				</p>
 			<?php endif; ?>
+			<p>
+				<label>Daty zamówienia</label>
+				<input type="text" class="js-bd form-control" name="date" />
+			</p>
 		<?php else: ?>
-			<span class="fwpr-product__price">
-				<?php the_field( 'fwpr_product_price' ); ?> PLN
-			</span>
+			<p>
+				<span class="fwpr-product__price">
+					<?php the_field( 'fwpr_product_price' ); ?> PLN
+				</span>
+			</p>
 			<input type="hidden" name="variant" value="false">
 		<?php endif; ?>
 		<input type="hidden" name="product_id" value="<?php the_ID(); ?>">
-		<button type="submit" class="btn btn-primary">Do koszyka</button>
+		<p>
+			<button type="submit" class="btn btn-primary">Do koszyka</button>
+		</p>
+		<p>
+			<input type="number" name="quantity">
+		</p>
 	</form>
 </div>

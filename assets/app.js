@@ -36,10 +36,24 @@
 	    startDate: date,
 	    daysOfWeekDisabled: "0,6"
 	});
-
+	$('.input-daterange input').each(function() {
+	    $(this).datepicker('clearDates');
+	});
 	$('.fwpr-payment').submit(function(event) {
 		event.preventDefault();
 		var formdata = $(this).serialize();
 		$('body').fwpr('pay',{data:formdata});
+	});
+
+
+
+	/** Always do something if ajax request completes */
+	$(document).ajaxComplete(function( event, request, settings,data ) {
+		if( data == undefined || data == null ) {
+			return false;
+		}
+		if( data.redirect != undefined && data != null) {
+			window.location = data.redirect;
+		}
 	});
 })(jQuery);

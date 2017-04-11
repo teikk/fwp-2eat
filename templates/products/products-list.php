@@ -10,4 +10,5 @@
 	<?php while( $query->have_posts() ): $query->the_post(); ?>
 		<?php fwpr_template( 'products/product' ); ?>
 	<?php endwhile; ?>
+	<?php wp_reset_postdata(); ?>
 <?php endif; ?>

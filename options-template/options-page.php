@@ -10,7 +10,7 @@
 	do_settings_sections('fwpr_settings');
 
 	//fwpr_admin_scripts();
-
+	/**
 	$exceptions = $this->options['opening_exceptions'];
 	if( is_array($exceptions) ) {
 		$count_exceptions = sizeof($exceptions);
@@ -64,6 +64,7 @@
 	<p class="submit">
 		<button type="button" class="fwpr-copy button-secondary">DODAJ Wyjatki</button>
 	</p>
+	*/ ?>
 	<?php 
 		// output save settings button
 		submit_button( __('Zapisz zmiany','fwpr') );

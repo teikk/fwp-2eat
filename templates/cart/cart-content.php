@@ -1,7 +1,6 @@
 <?php 
 $cart = FWPR_Cart::get_instance();
 $options = FWPR_Options::get_instance()->get_options();
-echo '<pre>'; print_r($options); echo '</pre>';
 ?>
 <?php do_action( 'fwpr/cart/items/before',$cart ); ?>
 <?php if( !empty($cart->items) ): ?>
@@ -12,7 +11,11 @@ echo '<pre>'; print_r($options); echo '</pre>';
 			<?php if( $item['variant'] !== 'false' ): ?>
 				<?php 
 				$variant = $cart->getVariant( $item['product'], $item['variant'] );
+				$date = $item['date'];
+				$date = $date = explode(',', $date);
+				sort($date);
 				?>
+				<p class="small">Start diety: <?php echo $date[0]; ?>, koniec diety: <?php echo end($date); ?></p>
 				<p class="small">Wariant: <?php echo $variant['name']; ?>, posiłków: <?php echo $variant['dinners']; ?></p>
 				<p class="small">Cena: <?php echo $variant['price']; ?> PLN</p>
 			<?php else: ?>
@@ -24,7 +27,7 @@ echo '<pre>'; print_r($options); echo '</pre>';
 			<?php endif; ?>
 			<form class="fwpr-remove-from-cart">
 				<input type="hidden" name="cart_item" value="<?php echo $key; ?>">
-				<button type="submit" class="btn btn-xs btn-danger">Usuń z koszyka</button>
+				<button type="submit" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></button>
 			</form>
 		</li>
 	<?php endforeach;?>

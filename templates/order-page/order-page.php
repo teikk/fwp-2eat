@@ -1,5 +1,6 @@
 <h1><?php the_title(); ?></h1>
-<form id="fwpr-online-payment" action="" method="POST">
+<div id="ajax-debug"></div>
+<form id="fwpr-online-payment" class="fwpr-payment" action="" method="POST">
 	<section class="payment">
 		<header class="payment__header">
 			<h3>Wybierz metodę płatności</h3>
@@ -14,7 +15,7 @@
 	<div>
 		<label>
 			<p>Imię</p>
-			<input type="text" class="form-control" name="firstname" required="required">
+			<input type="text" class="form-control" name="firstname" required="required">			
 		</label>
 	</div>
 	<div>
@@ -50,15 +51,19 @@
 	<div>
 		<label>
 			<p>Numer budynku</p>
-			<input type="text" class="form-control" name="street_n1"  id="street_n1" required="required">
+			<input type="text" class="form-control" name="block_number"  id="block_number" required="required">
 		</label>
 	</div>
 	<div>
 		<label>
 			<p>Numer mieszkania</p>
-			<input type="text" class="form-control" name="street_n2" id="street_n2">
+			<input type="text" class="form-control" name="flat_number" id="flat_number">
 		</label>
 	</div>
+	<div>
+		<label>Informacje do zamówienia</label>
+		<textarea class="form-control" name="info"></textarea>
+	</div>
 	<?php wp_nonce_field( 'fwpr_pay', '_fwpr_payment', true, true ); ?>
-	<button type="button" class="btn btn-success">ZAMÓW</button>
+	<button type="submit" class="btn btn-success">ZAMÓW</button>
 </form>
