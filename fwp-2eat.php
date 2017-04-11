@@ -1,5 +1,5 @@
 <?php 
-/**
+/*
 Plugin Name: FWP 2Eat
 Plugin URI: http://fabrykawp.pl/
 Description: Simply order food from wordpress
