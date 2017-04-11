@@ -14,6 +14,10 @@ class FWPR_Dotpay {
 		$instance = self::get_instance();
 		add_action( 'fwpr/payment-select', array( $instance,'select' ) );
 		add_filter( 'fwpr/payment/pay/dotpay', array( $instance,'pay' ) );
+		
+		// add_filter('acf/load_field/key=field_58c7e3a05f712', array($instance,'registerType') );
+		// add_filter('acf/load_field/key=field_58c7cd04e2960', array($instance,'registerType') );
+		add_filter('fwpr/payment/types', array($instance,'registerType'),20,1 );
 
 		add_action('wp',array($instance,'parse_response'));
 	}
@@ -21,12 +25,36 @@ class FWPR_Dotpay {
 		$select = '<div class="radio"><label><input type="radio" name="payment_type" value="dotpay">Przelew online</label></div>';
 		echo apply_filters( 'fwpr/payment/select/html', $select );
 	}
+
+	/**
+	 * Register new payment status for ACF payment type fields
+	 * @param array $field ACF Field array
+	 * @see  get_field_object() https://www.advancedcustomfields.com/resources/get_field_object/
+	 * @return array Array of modified choices
+	 */
+	public function registerType($types){
+		$types['dotpay'] = __('Przelew online','fwpr');
+		return $types;
+	}
+
+	/**
+	 * Generate base for DotPay test payments system
+	 * @return string Base URL for DotPay Test System
+	 */
 	private function test_url(){
 		$home_url = urlencode(home_url('/'));
-		return 'https://ssl.dotpay.pl/test_payment/?id=796548&api_version=dev&type=3&currency=PLN&description=Test-Payment';
+		return 'https://ssl.dotpay.pl/test_payment/?id=796548&api_version=dev&type=3&currency=PLN&description=Test-Payment&URLC='.$home_url;
+	}
+	private function paymentBaseUrl(){
+		$home_url = urlencode(home_url('/'));
+		return 'https://ssl.dotpay.pl/t2/?id=796548&api_version=dev&type=3&currency=PLN&description=Test-Payment';
 	}
 	public function payment_url($data){
-		$link = apply_filters( 'fwpr/dotpay/base_url', $this->test_url() );
+		if( FWPR_DEV ) {
+			$link = apply_filters( 'fwpr/dotpay/base_url', $this->test_url() );
+		} else {
+			$link = apply_filters( 'fwpr/dotpay/base_url', $this->paymentBaseUrl() );
+		}
 		if( !empty($data['first_name']) ) {
 			$link .= '&firstname='.sanitize_text_field( $data['first_name'] );
 		}
