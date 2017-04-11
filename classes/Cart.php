@@ -54,12 +54,8 @@ class FWPR_Cart {
 
 	public function getItems(){
 		$user = get_current_user_id();
-		if( $user != 0 ) {
-			$this->items = $_SESSION['fwpr_cart'];
-		} else {
-			$items = get_user_meta( $user, '_fwpr_cart', true );
-			$this->items = $items;
-		}
+		$this->items = $_SESSION['fwpr_cart'];
+		
 	}
 
 	public function removeItem( $item_key ) {
