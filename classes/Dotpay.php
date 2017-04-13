@@ -43,11 +43,15 @@ class FWPR_Dotpay {
 	 */
 	private function test_url(){
 		$home_url = urlencode(home_url('/'));
-		return 'https://ssl.dotpay.pl/test_payment/?id=796548&api_version=dev&type=3&currency=PLN&description=Test-Payment&URLC='.$home_url;
+		$options = get_option('fwpr_dotpay_options');
+		$globalOptions = get_option('fwpr_global_options');
+		return 'https://ssl.dotpay.pl/test_payment/?id='.$options['id'].'&api_version=dev&type=3&currency='.$globalOptions['currency'].'&URL='.$home_url.'&URLC='.$home_url;
 	}
 	private function paymentBaseUrl(){
 		$home_url = urlencode(home_url('/'));
-		return 'https://ssl.dotpay.pl/t2/?id=796548&api_version=dev&type=3&currency=PLN&description=Test-Payment';
+		$options = get_option('fwpr_dotpay_options');
+		$globalOptions = get_option('fwpr_global_options');
+		return 'https://ssl.dotpay.pl/t2/?id='.$options['id'].'&api_version=dev&type=3&currency='.$globalOptions['currency'].'&URL='.$home_url.'&URLC='.$home_url;
 	}
 	public function payment_url($data){
 		if( FWPR_DEV ) {
@@ -55,19 +59,19 @@ class FWPR_Dotpay {
 		} else {
 			$link = apply_filters( 'fwpr/dotpay/base_url', $this->paymentBaseUrl() );
 		}
-		if( !empty($data['first_name']) ) {
-			$link .= '&firstname='.sanitize_text_field( $data['first_name'] );
+		if( !empty($data['firstname']) ) {
+			$link .= '&firstname='.sanitize_text_field( $data['firstname'] );
 		}
-		if( !empty($data['last_name']) ) {
-			$link .= '&lastname='.sanitize_text_field( $data['last_name'] );
+		if( !empty($data['lastname']) ) {
+			$link .= '&lastname='.sanitize_text_field( $data['lastname'] );
 		}
-		if( !empty($data->data['email']) ) {
+		if( !empty($data['email']) ) {
 			$link .= '&email='.sanitize_text_field( $data['email'] );
 		}
 		
 		$link .= '&amount='.$data['price'];
 		$link .= '&control='.$data['control'];
-		$link .= '&URL='.add_query_arg('control',$data['control'],home_url());
+		$link .= '&description='.$data['firstname'].' '.$data['lastname'];
 		return $link;
 	}
 
@@ -75,7 +79,12 @@ class FWPR_Dotpay {
 		$data['price'] = FWPR_Cart::get_instance()->getTotals();
 		$payment_id = apply_filters( 'fwpr/payment/make', $data );
 		$payment_uniqid = get_post_meta( $payment_id, '_fwpr_payment_id', true );
-		$data['control'] = $payment_uniqid;		
+		$data['control'] = $payment_uniqid;
+		/**
+		 * Clear cart before redirect to payment page
+		 * @todo  Clear cart only after successfull payment
+		 */
+		do_action( 'fwpr/payment/completed', $data );
 		return $response = array(
 			'payment' => $payment_uniqid,
 			'redirect' => $this->payment_url($data)
@@ -147,10 +156,8 @@ class FWPR_Dotpay {
 		if( $_POST['operation_status'] != 'completed') {
 			return;
 		}
-		$control = $_POST['control'];
+		$control = $_POST['control'];		
 		
-		// Clear cart after successfull payment
-		do_action( 'fwpr/payment/completed', $_POST );
 		$this->accept_payment( $control );
 	}
 }
