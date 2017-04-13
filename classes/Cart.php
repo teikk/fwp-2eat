@@ -16,7 +16,7 @@ class FWPR_Cart {
 
 	public static function init(){
 		$instance = self::get_instance();
-		add_action('init',array($instance,'onInit'),1);
+		add_action('init',array($instance,'onInit'),0);
 		add_action('init',array($instance,'getItems'),1);
 		add_action( 'wp_ajax_fwpr_cart', array($instance,'api') );
 		add_action( 'wp_ajax_nopriv_fwpr_cart', array($instance,'api') );
@@ -91,8 +91,10 @@ class FWPR_Cart {
 		}
 		foreach ($this->items as $key => $item) {
 			if( $item['variant'] !== 'false' ) {
+				$dates = $item['date'];
+				$dates = explode(',',$dates);
 				$variant = $this->getVariant( $item['product'], $item['variant'] );
-				$totals += $variant['price'];
+				$totals += sizeof($dates) * $variant['price'];
 			} else {
 				$isDiscounted = get_field('fwpr_product_discounted',$item['product']);
 				$price = (!$isDiscounted) ? get_field( 'fwpr_product_price', $item['product']) : get_field( 'fwpr_product_price_discount', $item['product']);
