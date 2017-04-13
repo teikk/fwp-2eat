@@ -53,7 +53,7 @@
 		var drawingManager = new google.maps.drawing.DrawingManager({
 			drawingControlOptions: {
 				position: google.maps.ControlPosition.TOP_CENTER,
-				drawingModes: ['rectangle', 'circle', 'polygon']
+				drawingModes: ['polygon']
 				
 				
 			},
