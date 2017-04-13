@@ -5,7 +5,7 @@
 			 * Adds item to cart
 			 */
 			addToCart : function(){
-				console.log(args);
+				$(document).triggerHandler('fwpr/action/start');
 				$.post( fwpr.ajaxurl, {
 					action: 'fwpr_cart',
 					method: 'addToCart', 
@@ -20,6 +20,7 @@
 			 * Removes item from cart
 			 */
 			removeFromCart : function(){
+				$(document).triggerHandler('fwpr/action/start');
 				$.post( fwpr.ajaxurl, {
 					action: 'fwpr_cart',
 					method: 'removeFromCart',
@@ -44,6 +45,7 @@
 				});
 			},
 			pay : function(){
+				$(document).triggerHandler('fwpr/action/start');
 				$.post( fwpr.ajaxurl, {
 					action: 'fwpr_pay',
 					data: args.data

@@ -179,13 +179,13 @@ class FWPR_Payment {
 	public function pay($data){
 		$type = $data['payment_type'];
 		$response = apply_filters( 'fwpr/payment/pay/'.$type, $data );
-		do_action( 'fwpr/payment/completed', $data );
 		return $response;
 	}
 
 	public function default_payment($data){
 		$data['price'] = FWPR_Cart::get_instance()->getTotals();
 		$payment_id = $this->make_payment($data);
+		do_action( 'fwpr/payment/completed', $data );
 		return $response = array(
 			'redirect' => fwpr_returnUrl()
 			);

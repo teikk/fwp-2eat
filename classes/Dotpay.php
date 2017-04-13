@@ -82,8 +82,7 @@ class FWPR_Dotpay {
 			);
 	}
 
-	public function simulate_payment(){
-		$control = $_GET['control'];
+	public function accept_payment($control){
 		$payment = get_posts( array(
 			'post_type' => 'fwpr_payments',
 			'meta_key' => '_fwpr_payment_id',
@@ -95,7 +94,7 @@ class FWPR_Dotpay {
 	}
 	public function parse_response(){
 		if( !empty($_GET['control']) ) {
-			$this->simulate_payment();
+			$this->accept_payment( $_GET['control'] );
 		}
 		if( empty($_POST) ) {
 			return;
@@ -149,44 +148,9 @@ class FWPR_Dotpay {
 			return;
 		}
 		$control = $_POST['control'];
-		// $order = get_posts(array(
-		// 	'post_type' => 'quest_payments',
-		// 	'meta_key' => 'payment_code',
-		// 	'meta_value' => $control,
-		// 	'meta_compare' => '=',
-		// 	));
-		// $order = $order[0];
-		// $payment_type = get_field('payment_type',$order->ID);
-		// $customer = get_field('payment_user',$order->ID);
-		// if( is_array($customer) ) {
-		// 	$customer = $customer['ID'];
-		// }
-		// $paid_for = get_field('payment_for',$order->ID);
-		// // Post object for thing user is paying for
-		// $paid_for = get_post($paid_for);
 		
-		// if( $payment_type == 'form' ) {
-		// 	$code = get_field( 'payment_code_used',$order->ID );
-		// 	$code = quest_check_code($paid_for->ID, $code);
-		// 	if( $code ){
-		// 		do_action( 'quest/code/deactivate', $code->ID );
-		// 		/**
-		// 		 * Get coach ID required for assigning the result
-		// 		 */
-		// 		$coach = get_field( 'quest_code_user', $code->ID );
-		// 		if( is_array($coach) ) {
-		// 			$coach = $coach['ID'];
-		// 		}
-
-		// 		$results_for_coach = get_user_meta($customer,'_quest_results_for_coach', true);
-		// 		$results_for_coach[$paid_for->ID] = $coach;
-		// 		update_user_meta( $customer, '_quest_results_for_coach', $results_for_coach );
-		// 	}
-		// 	do_action( 'quest/form/unlock', $paid_for->ID, $customer );
-		// }
-		// if( $payment_type == 'codes' ) {
-		// 	$quantity = get_field('payment_quantity',$order->ID);
-		// 	do_action( 'quest/codes/generate', $quantity, $paid_for->ID, $customer['ID'],100, true, '' );
-		// }
+		// Clear cart after successfull payment
+		do_action( 'fwpr/payment/completed', $_POST );
+		$this->accept_payment( $control );
 	}
 }
