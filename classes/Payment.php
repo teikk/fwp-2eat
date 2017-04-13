@@ -16,6 +16,12 @@ class FWPR_Payment {
 		return self::$instance; // return the object
 		
 	}
+
+	/**
+	 * Initialize class in wordpress
+	 * @return void
+	 * @hook plugins_loaded
+	 */
 	public static function init(){
 		$instance = self::get_instance();
 		add_filter('acf/load_field/key=field_58c7e3a05f712', array($instance,'registerTypes') );
@@ -32,13 +38,22 @@ class FWPR_Payment {
 		add_action( 'wp_ajax_nopriv_fwpr_pay', array($instance,'api') );
 	}
 
-
+	/**
+	 * Register default payment types
+	 * @param  array $field ACF Field object(array)
+	 * @return array        Modified ACF Field
+	 */
 	public function registerTypes($field){
-		$field['choices'] = apply_filters( 'fwpr/payment/types', $this->types );
+		$field['choices'] = $this->types;
 		return $field;
 	}
+
+	/**
+	 * Get default payment types
+	 * @return array Default payment types
+	 */
 	public function getTypes(){
-		return $this->types;
+		return apply_filters( 'fwpr/payment/types', $this->types );
 	}
 
 	public function default_types(){

@@ -1,5 +1,9 @@
 <?php 
 add_action( 'plugins_loaded',array('FWPR_Dotpay','init') );
+
+/**
+ * Handles Dotpay payments
+ */
 class FWPR_Dotpay {
 	protected static $instance;
 	protected $allowed_ip = '195.150.9.37';
@@ -10,25 +14,25 @@ class FWPR_Dotpay {
 
 		return self::$instance; // return the object
 	}
+
+	/**
+	 * Initialize class in wordpress
+	 * @return void
+	 * @hook plugins_loaded
+	 */
 	public static function init(){
 		$instance = self::get_instance();
-		add_action( 'fwpr/payment-select', array( $instance,'select' ) );
+
 		add_filter( 'fwpr/payment/pay/dotpay', array( $instance,'pay' ) );
-		
-		// add_filter('acf/load_field/key=field_58c7e3a05f712', array($instance,'registerType') );
-		// add_filter('acf/load_field/key=field_58c7cd04e2960', array($instance,'registerType') );
 		add_filter('fwpr/payment/types', array($instance,'registerType'),20,1 );
 
 		add_action('wp',array($instance,'parse_response'));
-	}
-	public function select(){
-		$select = '<div class="radio"><label><input type="radio" name="payment_type" value="dotpay">Przelew online</label></div>';
-		echo apply_filters( 'fwpr/payment/select/html', $select );
 	}
 
 	/**
 	 * Register new payment status for ACF payment type fields
 	 * @param array $field ACF Field array
+	 * 
 	 * @see  get_field_object() https://www.advancedcustomfields.com/resources/get_field_object/
 	 * @return array Array of modified choices
 	 */
@@ -47,12 +51,23 @@ class FWPR_Dotpay {
 		$globalOptions = get_option('fwpr_global_options');
 		return 'https://ssl.dotpay.pl/test_payment/?id='.$options['id'].'&api_version=dev&type=3&currency='.$globalOptions['currency'].'&URL='.$home_url.'&URLC='.$home_url;
 	}
+
+	/**
+	 * Prepare base payment URL for production system
+	 * @return string Base payment URL for production 
+	 */
 	private function paymentBaseUrl(){
 		$home_url = urlencode(home_url('/'));
 		$options = get_option('fwpr_dotpay_options');
 		$globalOptions = get_option('fwpr_global_options');
 		return 'https://ssl.dotpay.pl/t2/?id='.$options['id'].'&api_version=dev&type=3&currency='.$globalOptions['currency'].'&URL='.$home_url.'&URLC='.$home_url;
 	}
+
+	/**
+	 * Populate payment URL with data from form
+	 * @param  array $data $_POST data from payment form
+	 * @return string       Populated URL ready to redirect user to payment process
+	 */
 	public function payment_url($data){
 		if( FWPR_DEV ) {
 			$link = apply_filters( 'fwpr/dotpay/base_url', $this->test_url() );
@@ -72,9 +87,14 @@ class FWPR_Dotpay {
 		$link .= '&amount='.$data['price'];
 		$link .= '&control='.$data['control'];
 		$link .= '&description='.$data['firstname'].' '.$data['lastname'];
-		return $link;
+		return apply_filters( 'fwpr/payment/dotpay/url', $link );
 	}
 
+	/**
+	 * Pay for products
+	 * @param  array $data $_POST data from form
+	 * @return array       Response containing payment unique id and redirect link
+	 */
 	public function pay($data){
 		$data['price'] = FWPR_Cart::get_instance()->getTotals();
 		$payment_id = apply_filters( 'fwpr/payment/make', $data );
@@ -91,6 +111,11 @@ class FWPR_Dotpay {
 			);
 	}
 
+	/**
+	 * Accepts payment based on passed code
+	 * @param  string $control Payment code generated at the beginning of the process
+	 * @return void          Updates payment_status field to 'complete'
+	 */
 	public function accept_payment($control){
 		$payment = get_posts( array(
 			'post_type' => 'fwpr_payments',
@@ -101,10 +126,17 @@ class FWPR_Dotpay {
 		$payment = $payment[0];
 		update_field('payment_status','completed',$payment->ID);
 	}
+
+	/**
+	 * Parse response from DotPay
+	 *
+	 * Checks Dotpay IP address
+	 * @return void Return if something is wrong
+	 */
 	public function parse_response(){
-		if( !empty($_GET['control']) ) {
-			$this->accept_payment( $_GET['control'] );
-		}
+		// if( !empty($_GET['control']) ) {
+		// 	$this->accept_payment( $_GET['control'] );
+		// }
 		if( empty($_POST) ) {
 			return;
 		}
@@ -156,8 +188,9 @@ class FWPR_Dotpay {
 		if( $_POST['operation_status'] != 'completed') {
 			return;
 		}
-		$control = $_POST['control'];		
-		
+
+		$control = $_POST['control'];				
 		$this->accept_payment( $control );
+		do_action('fwpr/payment/after');
 	}
 }

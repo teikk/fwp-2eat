@@ -2,6 +2,11 @@
 
 
 add_action( 'plugins_loaded', array('FWPR_Cart','init') );
+/**
+ * Class responsible for handling the cart funcitonality
+ * Starts the session if it is not started yet
+ * @since  1.0 Introduction
+ */
 class FWPR_Cart {
 	protected static $instance;
 	public $items = array();
@@ -14,6 +19,11 @@ class FWPR_Cart {
 		return self::$instance; // return the object
 	}
 
+	/**
+	 * Initialize class in wordpress
+	 * @return void
+	 * @hook plugins_loaded
+	 */
 	public static function init(){
 		$instance = self::get_instance();
 		add_action('init',array($instance,'onInit'),0);
@@ -22,6 +32,10 @@ class FWPR_Cart {
 		add_action( 'wp_ajax_nopriv_fwpr_cart', array($instance,'api') );
 	}
 
+	/**
+	 * Start the session and assign the cart key to empty array as default
+	 * @return void 
+	 */
 	public function onInit(){
 		if( session_id() == '' && !isset($_SESSION) ) {
 			session_start();
@@ -31,7 +45,16 @@ class FWPR_Cart {
 		}
 	}
 
+
+	/**
+	 * API for handling AJAX calls
+	 * @return void wp_die if json is not sent earlier
+	 */
 	public function api(){
+		/**
+		 * Cart method to call
+		 * @var string
+		 */
 		$method = $_POST['method'];
 		switch ($method) {
 			case 'addToCart':

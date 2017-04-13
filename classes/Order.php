@@ -1,12 +1,9 @@
 <?php 
-/**
- * @todo Zapisac wszystkie daty do meta zamowienia
- * @todo sprawdzic w wp query czy dane zamowienie ma wybrana date
- * @todo Pobrac repeater spelniajacy date
- * @todo 
- */
 
 add_action( 'plugins_loaded', array('FWPR_Order','init') );
+/**
+ * Manages the 
+ */
 class FWPR_Order {
 	protected static $instance;
 	function __construct(){}
@@ -18,8 +15,14 @@ class FWPR_Order {
 		return self::$instance; // return the object
 	}
 
+	/**
+	 * Initialize class in wordpress
+	 * @return void
+	 * @hook plugins_loaded
+	 */
 	public static function init(){
 		$instance = self::get_instance();
+
 		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 50, 3 );
 	}
 
@@ -36,10 +39,24 @@ class FWPR_Order {
 		sort($dates);
 		return $dates;
 	}
+
+	/**
+	 * Hook into acf/update_value
+	 * @param  mixed $value   Value of the field being saved
+	 * @param  integer $post_id Post ID being saved
+	 * @param  array $field   Field object (array)
+	 * @return $mixed         Modified value
+	 */
 	public function datesChanged($value, $post_id, $field){
 		$this->saveDates($post_id);
 		return $value;
 	}
+
+	/**
+	 * Save order dates to separate meta field
+	 * @param  integer $post_id Post ID to save dates to
+	 * @return void          Save the data
+	 */
 	public function saveDates($post_id){
 		$order_dates = array();
 		$rows = get_field('order_products',$post_id);
@@ -58,6 +75,15 @@ class FWPR_Order {
 		}
 		update_post_meta( $post_id, '_fwpr_order_dates', $order_dates );
 	}
+
+
+
+	/**
+	 * Create order post
+	 * @param  array $products Products to insert to order
+	 * @param  array $data     $_POST data from form
+	 * @return void           
+	 */
 	public function create( $products, $data ) {
 		$order_id = wp_insert_post( array(
 			'post_type' => 'fwpr_order',
