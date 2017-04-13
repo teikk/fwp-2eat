@@ -38,7 +38,7 @@ class FWPR_Payment {
 		return $field;
 	}
 	public function getTypes(){
-		return apply_filters( 'fwpr/payment/types', $this->types );
+		return $this->types;
 	}
 
 	public function default_types(){
@@ -126,10 +126,12 @@ class FWPR_Payment {
 	 */
 	public function select(){
 		$select = '';
-		foreach ($this->types as $key => $type) {
-			$select .= '<div class="radio"><label><input type="radio" name="payment_type" value="'.$key.'">'.$type.'</label></div>';
+		$types = $this->getTypes();
+		foreach ($types as $key => $type) {
+			$input = '<div class="radio"><label><input type="radio" name="payment_type" value="'.$key.'">'.$type.'</label></div>';
+			$select .= apply_filters( 'fwpr/payment/select/html', $input, $key, $type );
 		}
-		echo apply_filters( 'fwpr/payment/select/html', $select );
+		echo $select;
 	}
 	public function make_payment($data){
 		$payment_uniqid = md5(uniqid());
@@ -178,7 +180,7 @@ class FWPR_Payment {
 	}
 	public function pay($data){
 		$type = $data['payment_type'];
-		$response = apply_filters( 'fwpr/payment/pay/'.$type, $data );
+		$response = apply_filters( 'fwpr/payment/pay/'.$type, $data );		
 		return $response;
 	}
 
