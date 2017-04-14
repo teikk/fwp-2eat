@@ -14,7 +14,12 @@
 			 	<p>
 				 	<select class="form-control" name="variant">
 						<?php foreach ($variants as $key => $variant):?>
-						<option value="<?php echo $key; ?>"><?php echo $variant['name']; ?> - <?php echo $variant['price']; ?> PLN, Posiłków: <?php echo $variant['dinners']; ?> </option>
+						<option value="<?php echo $key; ?>">
+							<?php echo $variant['name']; ?> - <?php echo $variant['price']; ?> PLN
+							<?php if( !empty( $variant['dinners'] ) ): ?>
+								, Posiłków: <?php echo $variant['dinners']; ?>
+							<?php endif; ?>							
+						</option>
 						<?php endforeach;?>
 					</select>
 				</p>

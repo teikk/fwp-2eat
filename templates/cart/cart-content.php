@@ -17,7 +17,12 @@ $options = FWPR_Options::get_instance()->get_options();
 				sort($date);
 				?>
 				<p class="small">Start diety: <?php echo $date[0]; ?>, koniec diety: <?php echo end($date); ?></p>
-				<p class="small">Wariant: <?php echo $variant['name']; ?>, posiłków: <?php echo $variant['dinners']; ?></p>
+				<p class="small">
+					Wariant: <?php echo $variant['name']; ?>
+					<?php if( !empty( $variant['dinners'] ) ): ?>
+					, posiłków: <?php echo $variant['dinners']; ?>
+					<?php endif; ?>
+				</p>
 				<p class="small">Cena: <?php echo $dates * $variant['price']; ?> PLN</p>
 			<?php else: ?>
 				<?php 
