@@ -138,16 +138,6 @@ class FWPR_Options {
 				'USD' => 'USD',
 				)
 			) );
-		add_settings_field( 'fwpr_cart_type', __('Rodzaj koszyka','fwpr'), array($this,'global_fields'), $this->page_slug, 'fwpr_global', array(
-			'label_for'         => 'fwpr_cart_type',
-			'name' => 'cart_type',
-			'group' => 'global',
-			'type' => 'select',
-			'options' => array(
-				'list' => 'Lista',
-				'grouped' => 'Grupowany',
-				)
-			) );
 		register_setting($this->page_slug, 'fwpr_dotpay_options');
 
 		add_settings_section( 'fwpr_dotpay_settings', __('Ustawienia konta Dotpay','fwpr'), array($this,'dotpay_options'), $this->page_slug );
