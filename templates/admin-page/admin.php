@@ -1,5 +1,5 @@
 <?php 
-$date = '29/03/2017';
+$date = current_time( 'd/m/Y' );
 $orders = fwpr_sort_orders($date);
  ?>
 <h1><?php the_title(); ?></h1>
