@@ -113,7 +113,6 @@ class FWPR_Reminders {
 			}
 		}		
 	}
-
 	/**
 	 * Add ACF Options Page to dashboard
 	 * Has settings for reminder mails

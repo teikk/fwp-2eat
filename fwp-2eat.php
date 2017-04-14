@@ -3,9 +3,11 @@
 Plugin Name: FWP 2Eat
 Plugin URI: http://fabrykawp.pl/
 Description: Simply order food from WordPress
-Version: 2.0
+Version: 2.1
 Author: teik
 Author URI: http://fabrykawp.pl/
+License: GPL2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 
