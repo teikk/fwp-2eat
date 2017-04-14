@@ -44,7 +44,7 @@ class FWPR_Payment {
 	 * @return array        Modified ACF Field
 	 */
 	public function registerTypes($field){
-		$field['choices'] = $this->types;
+		$field['choices'] = $this->getTypes();
 		return $field;
 	}
 
