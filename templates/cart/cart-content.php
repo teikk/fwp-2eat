@@ -13,11 +13,12 @@ $options = FWPR_Options::get_instance()->get_options();
 				$variant = $cart->getVariant( $item['product'], $item['variant'] );
 				$date = $item['date'];
 				$date = $date = explode(',', $date);
+				$dates = sizeof($date);
 				sort($date);
 				?>
 				<p class="small">Start diety: <?php echo $date[0]; ?>, koniec diety: <?php echo end($date); ?></p>
 				<p class="small">Wariant: <?php echo $variant['name']; ?>, posiłków: <?php echo $variant['dinners']; ?></p>
-				<p class="small">Cena: <?php echo $variant['price']; ?> PLN</p>
+				<p class="small">Cena: <?php echo $dates * $variant['price']; ?> PLN</p>
 			<?php else: ?>
 				<?php 
 				$isDiscounted = get_field('fwpr_product_discounted',$item['product']);
