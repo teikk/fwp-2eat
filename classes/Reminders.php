@@ -32,6 +32,7 @@ class FWPR_Reminders {
 		add_action( 'admin_menu', array( $instance,'registerOptionPage' ),50 );
 
 		add_filter( 'fwpr/reminder/message/help', array( $instance,'messageTags' ) );
+		add_filter( 'fwpr/reminder/product-template/help', array( $instance,'productTags' ) );
 	}
 
 	/**
@@ -69,7 +70,10 @@ class FWPR_Reminders {
 
 		foreach ($orders as $key => $order) {
 			$rows = get_field('order_products',$order->ID);
-
+			$notify = array();
+			$to = get_field( 'order_mail',$order->ID );
+			$name = get_field('order_user',$order->ID);
+			$subject = get_field('fwpr_reminder_subject','option');
 			/**
 			 * Get products that have been notified already
 			 * @var array
@@ -78,41 +82,43 @@ class FWPR_Reminders {
 			if( empty($notified) ) {
 				$notified = array();
 			}
-
 			if( $rows ) {
 				foreach ($rows as $key => $row) {
 					$dates = $row['dates'];
-					/**
-					 * Skip the prouduct if the reminder was sent previously
-					 * @todo Fix case when users has multiple products with the same ID
-					 */
-					if( in_array($row['product'], $notified) ) continue;
-
 					if( $dates ) {
 						$lastDate = end( $dates );
-						if( $lastDate['date'] == $nextDay ) {
-							$to = get_field( 'order_mail',$order->ID );
-							$name = get_field('order_user',$order->ID);
-							$subject = get_field('fwpr_reminder_subject','option');
-
-							/**
-							 * Setup mail content 
-							 * @var bool
-							 */
-							$sent = wp_mail( $to, $subject, $this->setupMail($row['product'],$row['variant'], $lastDate['date'],$name) );
-							if( $sent ) {
-								/**
-								 * Add product to notified if mail has been sent successfully
-								 */
-								$notified[] = $row['product'];
-								update_post_meta( $order->ID, '_fwpr_reminder_sent', $notified );
+						/**
+						 * Skip the prouduct if the reminder was sent previously for chosen date
+						 */
+						if( array_key_exists($row['product'], $notified) ) {
+							if( in_array($nextDay, $notified[$row['product']]) ) {
+								continue;
 							}
+						}
+						if( $lastDate['date'] == $nextDay ) {
+							$notify[$key]['product'] = $row['product'];
+							$notify[$key]['variant'] = $row['variant'];
+							$notify[$key]['end_date'] = $lastDate['date'];
+
+
+							$notified[$row['product']][] = $lastDate['date'];
 						}
 					}
 				}
 			}
+			$sent = false;
+			if( !empty( $notify ) ) {
+				$sent = wp_mail( $to, $subject, $this->setupMail( $notify,$name ) );
+			}
+			if( $sent = true ) {
+				/**
+				 * Add product to notified if mail has been sent successfully
+				 */
+				update_post_meta( $order->ID, '_fwpr_reminder_sent', $notified );
+			}
 		}		
 	}
+
 	/**
 	 * Add ACF Options Page to dashboard
 	 * Has settings for reminder mails
@@ -241,6 +247,25 @@ class FWPR_Reminders {
 					'media_upload' => 1,
 					'delay' => 0,
 				),
+				array (
+					'key' => 'fwpr_58ef7849d8286',
+					'label' => 'Szablon produktu',
+					'name' => 'fwpr_reminder_template',
+					'type' => 'wysiwyg',
+					'instructions' => apply_filters('fwpr/reminder/product-template/help',''),
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'tabs' => 'all',
+					'toolbar' => 'full',
+					'media_upload' => 1,
+					'delay' => 0,
+				),
 			),
 			'location' => array (
 				array (
@@ -274,25 +299,38 @@ class FWPR_Reminders {
 	 * @param  string $customerName Name of the customer
 	 * @return string               Modified HTML mail content
 	 */
-	public function setupMail( $postID,$variantName, $endDate,$customerName ){
+	public function setupMail( $notify,$customerName ){
 		$content = get_field('fwpr_reminder_message','option');
-		$content = str_replace('[product_title]', get_the_title( $postID ), $content);
-		$content = str_replace('[variant_name]', $variantName, $content);
-		$content = str_replace('[end_date]', $endDate, $content);
+		// $content = str_replace('[product_title]', get_the_title( $postID ), $content);
+		// $content = str_replace('[variant_name]', $variantName, $content);
+		// $content = str_replace('[end_date]', $endDate, $content);
 		$content = str_replace('[customer_name]', $customerName, $content);
-		$content = apply_filters( 'fwpr/reminder/message', $content, $postID );
+		$productTemplate = get_field('fwpr_reminder_template','option');
+		$endingHtml = '';
+		foreach ($notify as $key => $order) {
+			$template = str_replace('[product_title]', get_the_title( $order['product'] ),$productTemplate);
+			$template = str_replace('[variant_name]', $order['variant'],$template);
+			$template = str_replace('[end_date]', $order['end_date'],$template);
+			$endingHtml .= $template;
+		}
+		$content = str_replace('[ending_orders]', $endingHtml, $content);
+		echo '<pre>'; print_r($content); echo '</pre>';
+		$content = apply_filters( 'fwpr/reminder/message', $content, $notify );
 		return $content;
 	}
 
 	public function messageTags($help){
 		$help = '[customer_name] - Nazwa klienta <br>';
+		return $help;
+	}
+
+	public function productTags($help){
 		$help = '[product_title] - Tytuł produktu <br>';
 		$help .= '[variant_name] - Nazwa wariantu <br>';
 		$help .= '[end_date] - Data końca <br>';
 
 		return $help;
 	}
-
 	/**
 	 * Change mail sender email adress
 	 * @param  string $email Default wordpress email adress
