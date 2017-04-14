@@ -12,7 +12,7 @@
 		$('body').fwpr('removeFromCart',{data:formdata});
 	});
 	
-	$(document).on('fwpr/cart/itemAdded fwpr/cart/itemRemoved fwpr/payment/completed',function(){
+	$(document).on('fwpr/cart/itemAdded fwpr/cart/itemRemoved',function(){
 		$('#fwpr-cart').fwpr('showCart');
 	});
 
@@ -45,10 +45,15 @@
 		$('body').fwpr('pay',{data:formdata});
 	});
 
-
+	$(document).on('fwpr/payment/completed',function(response){
+		if( response.redirect != undefined && response != null) {
+			window.location = response.redirect;
+		}
+	});
 
 	/** Always do something if ajax request completes */
-	$(document).ajaxComplete(function( event, request, settings,data ) {
+	$(document).ajaxSuccess(function( event, request, settings, data ) {
+
 		if( data == undefined || data == null ) {
 			return false;
 		}
