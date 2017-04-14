@@ -39,6 +39,7 @@
 	$('.input-daterange input').each(function() {
 	    $(this).datepicker('clearDates');
 	});
+	$('.fwpr-payment').parsley();
 	$('.fwpr-payment').submit(function(event) {
 		event.preventDefault();
 		var formdata = $(this).serialize();

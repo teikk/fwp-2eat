@@ -143,9 +143,14 @@ class FWPR_Payment {
 		$select = '';
 		$types = $this->getTypes();
 		foreach ($types as $key => $type) {
-			$input = '<div class="radio"><label><input type="radio" name="payment_type" value="'.$key.'">'.$type.'</label></div>';
+			$input = '<div class="radio">
+					<label>
+						<input type="radio" name="payment_type" value="'.$key.'" data-parsley-error-message="'.__('Wybierz sposób płatności','fwpr').'" data-parsley-errors-container=".fwpr-parsleyerror" required>'.$type.'
+					</label>
+				</div>';
 			$select .= apply_filters( 'fwpr/payment/select/html', $input, $key, $type );
 		}
+		$select .= '<div class="fwpr-parsleyerror"></div>';
 		echo $select;
 	}
 	public function make_payment($data){
