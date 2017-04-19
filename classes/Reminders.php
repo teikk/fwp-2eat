@@ -29,8 +29,7 @@ class FWPR_Reminders {
 		add_action( 'wp',array( $instance,'getOrders' ) );
 
 		add_action( 'init',array( $instance,'registerFieldGroup' ) );
-		add_action( 'admin_menu', array( $instance,'registerOptionPage' ),50 );
-
+		
 		add_filter( 'fwpr/reminder/message/help', array( $instance,'messageTags' ) );
 		add_filter( 'fwpr/reminder/product-template/help', array( $instance,'productTags' ) );
 	}
@@ -86,6 +85,7 @@ class FWPR_Reminders {
 				foreach ($rows as $key => $row) {
 					$dates = $row['dates'];
 					if( $dates ) {
+						usort( $dates,'fwpr_sortCartDates' );
 						$lastDate = end( $dates );
 						/**
 						 * Skip the prouduct if the reminder was sent previously for chosen date
@@ -120,22 +120,6 @@ class FWPR_Reminders {
 	}
 
 	/**
-	 * Add ACF Options Page to dashboard
-	 * Has settings for reminder mails
-	 * @return void 
-	 */
-	public function registerOptionPage(){
-		if( function_exists('acf_add_options_page') ) {
-			acf_add_options_page(array(
-					'page_title' 	=> 'Przypomnienia mailowe',
-					'menu_title' 	=> 'Przypomnienia mailowe',
-					'menu_slug' 	=> 'fwpr-reminder-settings',
-					'capability' 	=> 'edit_posts',
-				));
-		}
-	}
-
-	/**
 	 * Add ACF Field group to options page
 	 * Has needed settings for reminder mail
 	 *
@@ -155,6 +139,27 @@ class FWPR_Reminders {
 					'key' => 'field_58ef78a31ab75',
 					'label' => 'Kiedy wysłać przypomnienie',
 					'name' => 'fwpr_reminder',
+					'type' => 'number',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => 1,
+					'placeholder' => '',
+					'prepend' => '',
+					'append' => 'dni wstecz',
+					'min' => 1,
+					'max' => 7,
+					'step' => '',
+				),
+				array (
+					'key' => 'fwp_58ef78a31ab75',
+					'label' => 'Wyświetlanie przypomnień w panelu',
+					'name' => 'fwpr_reminder_panel',
 					'type' => 'number',
 					'instructions' => '',
 					'required' => 0,

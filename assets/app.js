@@ -27,16 +27,23 @@
 	} else {
 		date.setDate(date.getDate() + 2);		
 	}
+	if( fwpr.enableWeekends ) {
+		var daysDisabled = '';
+	} else {
+		daysDisabled = '0,6';
+	}
 	$('.js-bd').datepicker({
 		format: "dd/mm/yyyy",
 		container: '.fwpr-datepicker-container',
 		weekStart: 1,
 		todayBtn: false,
-		language: "pl",
+		language: 'pl',
 		multidate: true,
 		startDate: date,
+		datesDisabled: fwpr.disabledDates,
 		disableTouchKeyboard:true,
-		// daysOfWeekDisabled: "0,6"
+		showWeekDays:false,
+		daysOfWeekDisabled: daysDisabled
 	});
 	$('.js-bd').click(function(event){
 		event.stopPropagation();

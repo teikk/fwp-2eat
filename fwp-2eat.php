@@ -105,7 +105,9 @@ class FWPR_Food {
 		$options = FWPR_Options::get_instance()->get_options();
 		wp_localize_script( 'fwpr-plugins', 'fwpr', array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
-			'maxForTomorrow' => $options['global']['max_for_tomorrow']
+			'maxForTomorrow' => $options['global']['max_for_tomorrow'],
+			'disabledDates' => fwpr_getDisabledDates(),
+			'enableWeekends' => get_field('fwpr_enable_weekends','option')
 			) );	
 	}
 

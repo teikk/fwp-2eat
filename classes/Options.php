@@ -23,19 +23,8 @@ class FWPR_Options {
 		add_action('admin_menu',array($instance,'options_page'));
 		add_action('admin_menu',array($instance,'sub_options_page'));
 
-		add_action( 'admin_enqueue_scripts',array($instance,'admin_scripts') );
-	}
-	public function admin_scripts(){
-
-		// wp_register_script( 'fwpr-pickadate', FWPR_URI . 'dist/pickadate/picker.js', array( 'jquery' ), '1.0', true );
-		// wp_register_script( 'fwpr-pickadate-time', FWPR_URI . 'dist/pickadate/picker.time.js', array( 'jquery' ), '1.0', true );
-		// wp_register_script( 'fwpr-pickadate-date', FWPR_URI . 'dist/pickadate/picker.date.js', array( 'jquery' ), '1.0', true );
-		// wp_register_script( 'fwpr-pickadate-pl', FWPR_URI . 'dist/pickadate/pl_PL.js', array( 'jquery' ), '1.0', true );
-		// wp_register_script( 'fwpr-admin-scripts', FWPR_URI.'dist/admin/scripts.js', array( 'jquery' ), false, false );
-
-		// wp_register_style( 'fwpr-pickadate-css', FWPR_URI . 'dist/pickadate/classic.css' );
-		// wp_register_style( 'fwpr-pickadate-time-css', FWPR_URI . 'dist/pickadate/classic.time.css' );
-		// wp_register_style( 'fwpr-pickadate-date-css', FWPR_URI . 'dist/pickadate/classic.date.css' );
+		add_action( 'init', array( $instance,'registerACFOptionPages' ),50 );
+		add_action( 'init', array( $instance,'registerACFFieldGroup' ),50 );
 	}
 	public function get_options(){
 		return $this->options;
@@ -178,5 +167,140 @@ class FWPR_Options {
 	}
 	public function delivery(){
 		include FWPR_DIR . 'options-template/delivery-page.php';
+	}
+
+	/**
+	 * Add ACF Options Page to dashboard
+	 * Has settings for reminder mails
+	 * @return void 
+	 */
+	public function registerACFOptionPages(){
+		if( function_exists('acf_add_options_page') ) {
+			acf_add_options_sub_page(array(
+					'parent_slug' => 'fwpr_settings',
+					'page_title' 	=> 'Ustawienia kalendarza',
+					'menu_title' 	=> 'Ustawienia kalendarza',
+					'menu_slug' 	=> 'fwpr-datepicker-settings',
+					'capability' 	=> 'edit_posts',
+				));
+
+			acf_add_options_sub_page(array(
+					'parent_slug' => 'fwpr_settings',
+					'page_title' 	=> 'Przypomnienia',
+					'menu_title' 	=> 'Przypomnienia',
+					'menu_slug' 	=> 'fwpr-reminder-settings',
+					'capability' 	=> 'edit_posts',
+				));
+		}
+	}
+	public function registerACFFieldGroup(){
+		if( function_exists('acf_add_local_field_group') ):
+
+		acf_add_local_field_group(array (
+			'key' => 'group_58f73416d1369',
+			'title' => 'Weekendy',
+			'fields' => array (
+				array (
+					'key' => 'field_58f7342cda4dd',
+					'label' => 'Włącz zamawianie na weekend',
+					'name' => 'fwpr_enable_weekends',
+					'type' => 'true_false',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'message' => '',
+					'default_value' => 1,
+					'ui' => 1,
+					'ui_on_text' => 'Tak',
+					'ui_off_text' => 'Nie',
+				),
+			),
+			'location' => array (
+				array (
+					array (
+						'param' => 'options_page',
+						'operator' => '==',
+						'value' => 'fwpr-datepicker-settings',
+					),
+				),
+			),
+			'menu_order' => 0,
+			'position' => 'normal',
+			'style' => 'default',
+			'label_placement' => 'top',
+			'instruction_placement' => 'label',
+			'hide_on_screen' => '',
+			'active' => 1,
+			'description' => '',
+		));
+
+		acf_add_local_field_group(array (
+			'key' => 'group_58f730286adb4',
+			'title' => 'Wyłączone daty',
+			'fields' => array (
+				array (
+					'key' => 'field_58f7309c514b2',
+					'label' => 'Wybierz daty do wykluczenia',
+					'name' => 'fwpr_disabled_dates',
+					'type' => 'repeater',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'collapsed' => '',
+					'min' => 0,
+					'max' => 0,
+					'layout' => 'block',
+					'button_label' => 'Dodaj datę',
+					'sub_fields' => array (
+						array (
+							'key' => 'field_58f731dd5c24a',
+							'label' => 'Data',
+							'name' => 'data',
+							'type' => 'date_picker',
+							'instructions' => '',
+							'required' => 0,
+							'conditional_logic' => 0,
+							'wrapper' => array (
+								'width' => '',
+								'class' => '',
+								'id' => '',
+							),
+							'display_format' => 'd/m/Y',
+							'return_format' => 'd/m/Y',
+							'first_day' => 1,
+						),
+					),
+				),
+			),
+			'location' => array (
+				array (
+					array (
+						'param' => 'options_page',
+						'operator' => '==',
+						'value' => 'fwpr-datepicker-settings',
+					),
+				),
+			),
+			'menu_order' => 0,
+			'position' => 'normal',
+			'style' => 'default',
+			'label_placement' => 'top',
+			'instruction_placement' => 'label',
+			'hide_on_screen' => '',
+			'active' => 1,
+			'description' => '',
+		));
+
+		endif;
 	}
 }

@@ -80,3 +80,15 @@ function fwpr_payment_label($type) {
 	$types = apply_filters( 'fwpr/payment/types', $types );
 	return $types[$type];
 }
+
+function fwpr_getDisabledDates(){
+	$disabled = get_field('fwpr_disabled_dates','option');
+
+	$disabledDates = array();
+	if( !empty( $disabled ) ) {
+		foreach ($disabled as $key => $date) {
+			$disabledDates[] = $date['data'];
+		}
+	}	
+	return $disabledDates;
+}
