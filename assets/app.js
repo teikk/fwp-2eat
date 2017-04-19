@@ -28,17 +28,23 @@
 		date.setDate(date.getDate() + 2);		
 	}
 	$('.js-bd').datepicker({
-	    format: "dd/mm/yyyy",
-	    weekStart: 1,
-	    todayBtn: "linked",
-	    language: "pl",
-	    multidate: 14,
-	    startDate: date,
-	    daysOfWeekDisabled: "0,6"
+		format: "dd/mm/yyyy",
+		container: '.fwpr-datepicker-container',
+		weekStart: 1,
+		todayBtn: false,
+		language: "pl",
+		multidate: true,
+		startDate: date,
+		disableTouchKeyboard:true,
+		// daysOfWeekDisabled: "0,6"
 	});
-	$('.input-daterange input').each(function() {
-	    $(this).datepicker('clearDates');
+	$('.js-bd').click(function(event){
+		event.stopPropagation();
 	});
+	$('body').click(function(){
+		$('.js-bd').datepicker('hide');
+	});
+
 	$('.fwpr-payment').parsley();
 	$('.fwpr-payment').submit(function(event) {
 		event.preventDefault();
