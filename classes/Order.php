@@ -36,7 +36,7 @@ class FWPR_Order {
 	 */
 	public function parseDates( $dates ) {
 		$dates = explode(',', $dates);
-		sort($dates);
+		usort($dates, 'fwpr_sortCartDates');
 		return $dates;
 	}
 

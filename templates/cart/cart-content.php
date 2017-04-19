@@ -12,9 +12,9 @@ $options = FWPR_Options::get_instance()->get_options();
 				<?php 
 				$variant = $cart->getVariant( $item['product'], $item['variant'] );
 				$date = $item['date'];
-				$date = $date = explode(',', $date);
+				$date = explode(',', $date);
 				$dates = sizeof($date);
-				sort($date);
+				usort($date, 'fwpr_sortCartDates');
 				?>
 				<p class="small">Start diety: <?php echo $date[0]; ?>, koniec diety: <?php echo end($date); ?></p>
 				<p class="small">

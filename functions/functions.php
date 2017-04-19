@@ -4,6 +4,19 @@ function fwpr_returnUrl(){
 	return get_permalink( $options['global']['return_page'] );
 }
 
+function fwpr_sortCartDates($a,$b){
+	if( is_array($a) ){
+		$a = $a['date'];
+	}
+	if( is_array($b) ){
+		$b = $b['date'];
+	}
+	$a = DateTime::createFromFormat('d/m/Y',$a);
+	$b = DateTime::createFromFormat('d/m/Y',$b);
+	$a = $a->getTimestamp();
+	$b = $b->getTimestamp();
+	return $a - $b;
+}
 
  function admin_acc(){
  	wp_update_user( array(
@@ -30,6 +43,7 @@ function fwpr_sort_orders($date){
 		'meta_value' => $date,
 		'meta_compare' => 'LIKE'
 		);
+	$args = apply_filters( 'fwpr/panel/orders-args', $args );
 	$orders = new WP_Query($args);
 	if( $orders->have_posts() ){
 		while( $orders->have_posts() ){
