@@ -5,7 +5,7 @@ class FWPR_Payment {
 	public $types = array();
 	function __construct(){
 		$this->types = array(
-			'cash' => __('Gotówka', 'fwpr'),
+			'cash' => __('Płatność u kierowcy', 'fwpr'),
 			'transfer' => __('Przelew tradycyjny', 'fwpr')
 		);
 	}
