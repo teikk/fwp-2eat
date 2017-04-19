@@ -108,9 +108,9 @@ class FWPR_Reminders {
 			}
 			$sent = false;
 			if( !empty( $notify ) ) {
-				$sent = wp_mail( $to, $subject, $this->setupMail( $notify,$name ) );
+				//$sent = wp_mail( $to, $subject, $this->setupMail( $notify,$name ) );
 			}
-			if( $sent = true ) {
+			if( $sent ) {
 				/**
 				 * Add product to notified if mail has been sent successfully
 				 */
@@ -314,13 +314,13 @@ class FWPR_Reminders {
 			$endingHtml .= $template;
 		}
 		$content = str_replace('[ending_orders]', $endingHtml, $content);
-		echo '<pre>'; print_r($content); echo '</pre>';
 		$content = apply_filters( 'fwpr/reminder/message', $content, $notify );
 		return $content;
 	}
 
 	public function messageTags($help){
 		$help = '[customer_name] - Nazwa klienta <br>';
+		$help .= '[ending_orders] - Kończące się zamówienia <br>';
 		return $help;
 	}
 
