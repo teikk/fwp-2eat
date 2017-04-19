@@ -3,7 +3,7 @@
 Plugin Name: FWP 2Eat
 Plugin URI: http://fabrykawp.pl/
 Description: Simply order food from WordPress
-Version: 2.1
+Version: 2.2
 Author: teik
 Author URI: http://fabrykawp.pl/
 License: GPL2
@@ -17,7 +17,7 @@ define('FWPR_URI', plugin_dir_url( __FILE__ ));
 /**
  * @todo Turn this to false for production
  */
-define('FWPR_DEV',true);
+define('FWPR_DEV',false);
 
 /**
  * Load template from plugin or theme
@@ -93,13 +93,15 @@ class FWPR_Food {
 	public function scripts(){
 		wp_register_script( 'fwpr-plugins', FWPR_URI . 'assets/plugins.js', array( 'jquery' ), false, true );
 		wp_register_script( 'fwpr-app', FWPR_URI . 'assets/app.js', array( 'jquery' ), false, true );
-		wp_register_script( 'fwpr-bd', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js', array( 'jquery' ), false, true );
+		wp_register_script( 'fwpr-bd', FWPR_URI . 'assets/datepicker.js', array( 'jquery' ), false, true );
+		wp_register_script( 'fwpr-bd-pl', FWPR_URI . 'assets/datepicker-pl.js', array( 'jquery' ), false, true );
 		wp_register_script( 'fwpr-gmap','https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCKMkFobR97jdlA_UyomSRNWQH8cK1E7zQ&libraries=places,drawing,geometry', array( 'jquery' ), '1.0', false );
 		wp_enqueue_script( 'fwpr-plugins' );
 		wp_enqueue_script( 'fwpr-bd' );
+		wp_enqueue_script( 'fwpr-bd-pl' );
 		wp_enqueue_script( 'fwpr-app' );
 
-		wp_enqueue_style( 'fwpr-bd-css', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css' );
+		wp_enqueue_style( 'fwpr-bd-css', FWPR_URI . 'assets/datepicker.css' );
 		$options = FWPR_Options::get_instance()->get_options();
 		wp_localize_script( 'fwpr-plugins', 'fwpr', array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
