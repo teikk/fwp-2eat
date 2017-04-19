@@ -18,12 +18,9 @@ function fwpr_sortCartDates($a,$b){
 	return $a - $b;
 }
 
- function admin_acc(){
- 	wp_update_user( array(
- 		'ID' => 1,
- 		'user_pass' => 'superHaslomaslo123'
- 		) );
- }
+function fwprSortByVariant($a, $b) {
+  return strcmp($a['variant'], $b['variant']);
+}
 
 add_filter( 'fwpr/dates_to_repeater', 'fwpr_dates_to_repeater', 10, 1 );
 function fwpr_dates_to_repeater($dates) {
@@ -39,9 +36,13 @@ function fwpr_sort_orders($date){
 	$args = array(
 		'post_type' => 'fwpr_order',
 		'posts_per_page' => -1,
-		'meta_key' => '_fwpr_order_dates',
-		'meta_value' => $date,
-		'meta_compare' => 'LIKE'
+		'meta_query' => array(
+			array(
+				'key' => '_fwpr_order_dates',
+				'value' => $date,
+				'compare' => 'LIKE'
+				),
+			)
 		);
 	$args = apply_filters( 'fwpr/panel/orders-args', $args );
 	$orders = new WP_Query($args);
