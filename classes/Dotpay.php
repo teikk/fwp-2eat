@@ -146,13 +146,13 @@ class FWPR_Dotpay {
 			return;
 		}
 		error_log(print_r($_POST,true));
-		if( $_POST['id'] != '796548' ) {
+		$options = get_option('fwpr_dotpay_options');
+		if( $_POST['id'] != $options['id'] ) {
 			return;
 		}
 		echo "OK";
-		
 		$sign=
-		'ydNgiAGtf57SUARukZCGjUps8HhAwmZI'.
+		$options['pin'].
 		$_POST['id'].
 		$_POST['operation_number'].
 		$_POST['operation_type'].

@@ -148,6 +148,12 @@ class FWPR_Options {
 			'group' => 'dotpay',
 			'type' => 'text'
 			) );
+		add_settings_field( 'fwpr_dotpay_pin', __('PIN Konta dotpay','fwpr'), array($this,'global_fields'), $this->page_slug, 'fwpr_dotpay_settings', array(
+			'label_for'         => 'fwpr_dotpay_pin',
+			'name' => 'pin',
+			'group' => 'dotpay',
+			'type' => 'text'
+			) );
 	}
 	public function global_options($args){
 		//echo '<pre>'; print_r($this->options); echo '</pre>';
