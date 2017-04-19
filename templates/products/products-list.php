@@ -9,6 +9,10 @@
 	.fwpr-datepicker-container {
 		position: relative;
 	}
+	.datepicker-days .old,
+	.datepicker-days .new {
+		visibility: hidden;
+	}
 </style>
 <h4>Lista produktów</h4>
 <?php if( $query->have_posts() ): ?>

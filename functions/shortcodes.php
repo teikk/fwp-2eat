@@ -30,3 +30,11 @@
 		return ob_get_clean();
 	}
 	add_shortcode( 'fwpr_admin_page', 'fwpr_admin_page' );
+
+
+	function fwpr_ending_orders(){
+		ob_start();
+		fwpr_template('admin-page/ending-orders');
+		return ob_get_clean();
+	}
+	add_shortcode( 'fwpr_ending_orders', 'fwpr_ending_orders' );
