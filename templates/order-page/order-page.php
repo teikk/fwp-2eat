@@ -1,5 +1,6 @@
 <h1><?php the_title(); ?></h1>
 <div id="ajax-debug"></div>
+
 <form id="fwpr-online-payment" class="fwpr-payment" action="" method="POST">
 	<section class="payment">
 		<header class="payment__header">
