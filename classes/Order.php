@@ -22,10 +22,12 @@ class FWPR_Order {
 	 */
 	public static function init(){
 		$instance = self::get_instance();
-
-		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 50, 3 );
+		add_filter( 'acf/save_post', array($instance,'manualCreation') );
+		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 9999, 3 );
 	}
-
+	public function manualCreation($post_id){
+		$this->saveDates($post_id);
+	}
 	public function api(){}
 	/**
 	 * Explode and sort dates string for order saving
