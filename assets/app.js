@@ -40,6 +40,7 @@
 		language: 'pl',
 		multidate: true,
 		startDate: date,
+		closeBtn:true,
 		datesDisabled: fwpr.disabledDates,
 		disableTouchKeyboard:true,
 		showWeekDays:false,

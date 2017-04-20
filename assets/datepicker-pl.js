@@ -12,6 +12,7 @@
         today: "Dzisiaj",
         weekStart: 1,
         clear: "Wyczyść",
+        close: "Zamknij",
         format: "dd.mm.yyyy"
     };
 }(jQuery));
