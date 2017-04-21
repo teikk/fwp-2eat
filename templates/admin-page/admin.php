@@ -1,5 +1,15 @@
 <?php 
-$date = current_time( 'd/m/Y' );
+if( !empty($_GET['date']) ) {
+	$date = $_GET['date'];
+} else {
+	$date = current_time('d/m/Y');
+}
+$today = DateTime::createFromFormat('d/m/Y', $date );
+$today = $today->format('U');
+$tomorrow = strtotime('+1 day',$today);
+$tomorrow = date( 'd/m/Y' ,$tomorrow);
+$yesterday = strtotime('-1 day',$today);
+$yesterday = date('d/m/Y',$yesterday);
 $orders = fwpr_sort_orders($date);
  ?>
 <h1><?php the_title(); ?></h1>
@@ -60,3 +70,14 @@ $orders = fwpr_sort_orders($date);
 		<?php endif; ?>
 	<?php endforeach; ?>
 <?php endif; ?>
+<ul class="fwpr-pagination">
+	<li class="fwpr-pagination__item">
+		<a href="<?php echo add_query_arg('date', $yesterday, get_permalink() ); ?>" class="fwpr-pagination__link"><<</a>
+	</li>
+	<li class="fwpr-pagination__item">
+		<a href="<?php the_permalink(); ?>" class="fwpr-pagination__link">Dziś</a>
+	</li>
+	<li class="fwpr-pagination__item">
+		<a href="<?php echo add_query_arg('date', $tomorrow, get_permalink() ); ?>" class="fwpr-pagination__link">>></a>
+	</li>
+</ul>
