@@ -89,9 +89,16 @@ class FWPR_Notifications {
 		$senderName = get_field('fwpr_notification_sender_name','option');
 
 		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: '.$sender.' <'.$senderName.'>'
+			'Content-Type: text/html; charset=UTF-8',			
 			);
+		if( !empty( $sender ) && !empty($senderName) ) {
+			$headers[] = 'From: '.$sender.' <'.$senderName.'>';
+		}
+		/** Remove filters added by FWPR_Reminders class */
+		remove_filter( 'wp_mail_from', array('FWPR_Reminders','mail_from') );
+		remove_filter( 'wp_mail_from_name', array('FWPR_Reminders','mail_from_name') );
+		remove_filter( 'wp_mail_content_type', array('FWPR_Reminders','content_type') );
+
 		$headers = apply_filters( 'fwpr/notification/mail/headers', $headers );
 		if( !empty( $to ) || !empty( $sender ) ) {
 			wp_mail( $to, $subject, $message, $headers );
