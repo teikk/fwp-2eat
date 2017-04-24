@@ -206,7 +206,9 @@ class FWPR_Payment {
 
 	public function default_payment($data){
 		$data['price'] = FWPR_Cart::get_instance()->getTotals();
-		$payment_id = $this->make_payment($data);
+		$payment_id = $this->make_payment( $data );
+
+		do_action( 'fwpr/payment/completed/'.$data['payment_type'], $data );		
 		do_action( 'fwpr/payment/completed', $data );
 		return $response = array(
 			'redirect' => fwpr_returnUrl()

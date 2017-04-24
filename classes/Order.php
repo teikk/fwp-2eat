@@ -26,7 +26,20 @@ class FWPR_Order {
 		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 9999, 3 );
 	}
 	public function manualCreation($post_id){
+		if( get_post_type($post_id) != 'fwpr_order' ) return;
+		
 		$this->saveDates($post_id);
+
+		$order_data = array();
+		$order_data['user'] = get_field( 'order_user', $post_id );
+		$order_data['address'] = get_field( 'order_address', $post_id );
+		$order_data['payment_type'] = get_field( 'order_payment_type', $post_id );
+		$order_data['phone'] = get_field( 'order_phone', $post_id );
+		$order_data['mail'] = get_field( 'order_mail', $post_id );
+		$order_data['info'] = wp_strip_all_tags( get_field( 'order_info', $post_id ) );
+		$order_data['payment'] = get_post_meta( $post_id, '_fwpr_payment_order_created', true );
+
+		do_action('fwpr/order/create',$order_data,$post_id);
 	}
 	public function api(){}
 	/**

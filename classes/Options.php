@@ -192,6 +192,7 @@ class FWPR_Options {
 					'capability' 	=> 'edit_posts',
 				));
 		}
+		do_action( 'fwpr/options/pages' );
 	}
 	public function registerACFFieldGroup(){
 		if( function_exists('acf_add_local_field_group') ):

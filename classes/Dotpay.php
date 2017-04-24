@@ -124,7 +124,9 @@ class FWPR_Dotpay {
 			'meta_compare' => '='
 			) );
 		$payment = $payment[0];
-		update_field('payment_status','completed',$payment->ID);
+		
+		update_field('payment_status','completed',$payment->ID);		
+		do_action('fwpr/payment/completed/dotpay',$payment->ID);
 	}
 
 	/**
