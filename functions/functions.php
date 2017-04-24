@@ -93,3 +93,13 @@ function fwpr_getDisabledDates(){
 	}	
 	return $disabledDates;
 }
+
+add_filter( 'acf/load_value/key=field_58c92b70760ff', 'fwpr_reformatDate', 10, 3 );
+function fwpr_reformatDate($value,$post_id,$field){
+	if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}$/",$value)) {
+		$date = DateTime::createFromFormat( 'd/m/Y',$value );
+		$value = $date->format('Ymd');
+	}
+	return $value;
+}
+
