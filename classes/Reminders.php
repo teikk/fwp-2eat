@@ -108,7 +108,9 @@ class FWPR_Reminders {
 			}
 			$sent = false;
 			if( !empty( $notify ) ) {
-				//$sent = wp_mail( $to, $subject, $this->setupMail( $notify,$name ) );
+				if( !empty($to) ) {
+					$sent = wp_mail( $to, $subject, $this->setupMail( $notify,$name ) );
+				}
 			}
 			if( $sent ) {
 				/**
@@ -343,7 +345,10 @@ class FWPR_Reminders {
 	 */
 	public static function mail_from($email){
 		$mail = get_field('fwpr_sender','option');
-		return $mail;
+		if( !empty( $mail ) ) {
+			$email = $mail;
+		}
+		return $email;
 	}
 
 	/**
@@ -351,8 +356,11 @@ class FWPR_Reminders {
 	 * @param  string $name Default wordpress mail sender name
 	 * @return strign       Changed name
 	 */
-	public static function mail_from_name($name){
+	public static function mail_from_name($name){		
 		$name = get_field('fwpr_sender_name','option');
+		if( !empty( $name ) ) {
+			$email = $name;
+		}
 		return $name;
 	}
 
