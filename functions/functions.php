@@ -26,7 +26,8 @@ add_filter( 'fwpr/dates_to_repeater', 'fwpr_dates_to_repeater', 10, 1 );
 function fwpr_dates_to_repeater($dates) {
 	$mDates = array();
 	foreach ($dates as $key => $date) {
-		$mDates[] = array('date' => $date);
+		$date = DateTime::createFromFormat('d/m/Y',$date);
+		$mDates[] = array('date' => $date->format( 'Ymd') );
 	}
 	return $mDates;
 }

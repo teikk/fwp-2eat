@@ -103,7 +103,7 @@ class FWPR_Payment {
 				$isDiscounted = get_field('fwpr_product_discounted',$product['product']);
 				$price = (!$isDiscounted) ? get_field( 'fwpr_product_price', $product['product']) : get_field( 'fwpr_product_price_discount', $product['product']);
 				$date = array(
-					array('date' => 'Jak najszybciej')
+					array('date' => '')
 					);
 			}
 			$order_products[] = array(
