@@ -92,7 +92,7 @@ class FWPR_Notifications {
 			'Content-Type: text/html; charset=UTF-8',			
 			);
 		if( !empty( $sender ) && !empty($senderName) ) {
-			$headers[] = 'From: '.$sender.' <'.$senderName.'>';
+			$headers[] = 'From: '.$senderName.' <'.$sender.'>';
 		}
 		/** Remove filters added by FWPR_Reminders class */
 		remove_filter( 'wp_mail_from', array('FWPR_Reminders','mail_from') );
