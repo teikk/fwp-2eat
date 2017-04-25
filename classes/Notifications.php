@@ -23,8 +23,18 @@ class FWPR_Notifications {
 
 		add_action( 'fwpr/order/create', array($instance,'adminNotification'), 5, 2 );
 		add_action( 'fwpr/order/create', array($instance,'userNotification'), 10, 2 );
+		add_action( 'fwpr/payment/create', array($instance,'userPaymentNotification'), 10, 1 );
 
 		add_action( 'fwpr/notification/message/help', array($instance,'instructionsMessage'));
+	}
+
+	public function userPaymentNotification($paymentID){
+		$subject = get_field('fwpr_payment_subject','option');
+		$message = get_field('fwpr_payment_message','option');
+		$data = FWPR_Order::get_instance()->orderData($paymentID);
+
+		$message = $this->prepareMessage($message, $data, $paymentID);
+		$this->sendMail($data['mail'],$subject,$message);
 	}
 
 	public function userNotification($data,$orderID){
@@ -50,7 +60,12 @@ class FWPR_Notifications {
 		$message = str_replace('[order_mail]', $data['mail'], $message);
 		$message = str_replace('[order_phone]', $data['phone'], $message);
 
-		$products = get_field('order_products',$orderID);
+		if( get_post_type($orderID) == 'fwpr_payments' ) {
+			$payment_products = get_post_meta( $orderID,'_fwpr_payment_products',true );					
+			$products = FWPR_Order::get_instance()->parseProducts($payment_products);
+		} else {
+			$products = get_field('order_products',$orderID);
+		}
 		
 		$productsHtml = '';
 		$totalPrice = 0;
@@ -58,15 +73,24 @@ class FWPR_Notifications {
 			$productsHtml = apply_filters( 'fwpr/notification/products/wrap/open', '<ul>' );
 			foreach ($products as $key => $product) {				 
 				$productItem = '<li>'.get_the_title($product['product']).': '.$product['variant'].'</li>';
-				$productsHtml .= apply_filters( 'fwpr/notification/date/item',$productItem );
+				$productsHtml .= apply_filters( 'fwpr/notification/products/item',$productItem );
 				$dates = $product['dates'];
 				if( !empty($dates) ) {
 					$totalPrice += $product['price'] * sizeof($dates);
-					usort($dates, 'fwpr_sortCartDates');
+					if( get_post_type($orderID) == 'fwpr_payments' ) {
+						usort($dates, 'fwpr_sortACFDates');						
+					} else {
+						usort($dates, 'fwpr_sortCartDates');
+					}
 					$datesHtml = apply_filters( 'fwpr/notification/date/wrap/open', '<ul>' );
 
 					foreach ($dates as $key => $date) {
-						$dateItem = '<li>'.$date['date'].'</li>';
+						if( get_post_type($orderID) == 'fwpr_payments' ) {
+							$dateFormatted = $date['date'];
+							$dateFormatted = DateTime::createFromFormat('Ymd',$dateFormatted);
+							$dateFormatted = $dateFormatted->format('d/m/Y');
+						}
+						$dateItem = '<li>'.$dateFormatted.'</li>';
 						$datesHtml .= apply_filters( 'fwpr/notification/date/item', $dateItem );
 					}
 
@@ -135,6 +159,59 @@ class FWPR_Notifications {
 			'key' => 'group_58e207a563357',
 			'title' => 'Maile systemowe',
 			'fields' => array (
+				array (
+					'key' => 'fwpr_58e207ad93ac1',
+					'label' => 'Przyjęcie płatności',
+					'name' => '',
+					'type' => 'tab',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'placement' => 'left',
+					'endpoint' => 0,
+				),
+				array (
+					'key' => 'fwpr_58e207bf93ac2',
+					'label' => 'Temat',
+					'name' => 'fwpr_payment_subject',
+					'type' => 'text',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'placeholder' => '',
+					'prepend' => '',
+					'append' => '',
+					'maxlength' => '',
+				),
+				array (
+					'key' => 'fwpr_58e207c793ac3',
+					'label' => 'Wiadomość',
+					'name' => 'fwpr_payment_message',
+					'type' => 'wysiwyg',
+					'instructions' => apply_filters( 'fwpr/notification/message/help', '' ),
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array (
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'tabs' => 'all',
+					'toolbar' => 'full',
+					'media_upload' => 1,
+				),
 				array (
 					'key' => 'field_58e207ad93ac1',
 					'label' => 'Przyjęcie zamówienia',

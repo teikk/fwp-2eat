@@ -24,6 +24,8 @@ class FWPR_Order {
 		$instance = self::get_instance();
 		add_filter( 'acf/save_post', array($instance,'manualCreation') );
 		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 9999, 3 );
+
+		add_filter('fwpr/payment/order-data', array($instance,'orderData'), 10, 1);
 	}
 	public function manualCreation($post_id){
 		if( get_post_type($post_id) != 'fwpr_order' ) return;
@@ -53,6 +55,45 @@ class FWPR_Order {
 		$dates = explode(',', $dates);
 		usort($dates, 'fwpr_sortCartDates');
 		return $dates;
+	}
+
+	public function parseProducts($cartProducts){
+		$order_products = array();
+		foreach ($cartProducts as $key => $product) {
+			if( $product['variant'] !== 'false' ) {
+				$variant = FWPR_Cart::get_instance()->getVariant($product['product'],$product['variant']); 
+				$variant_text = $variant['name'].', posiłków:'. $variant['dinners'];
+				$price = $variant['price'];
+				$date = FWPR_Order::get_instance()->parseDates( $product['date'] );
+				$date = apply_filters( 'fwpr/dates_to_repeater', $date );
+			} else {
+				$variant_text = 'Brak, produkt prosty';
+				$isDiscounted = get_field('fwpr_product_discounted',$product['product']);
+				$price = (!$isDiscounted) ? get_field( 'fwpr_product_price', $product['product']) : get_field( 'fwpr_product_price_discount', $product['product']);
+				$date = array(
+					array('date' => '')
+					);
+			}
+			$order_products[] = array(
+				'product' => $product['product'],
+				'variant' => $variant_text,
+				'price' => $price,
+				'dates' => $date
+				);
+		}
+		return $order_products;
+	}
+
+	public function orderData($paymentID) {
+		$order_data = array();
+		$order_data['user'] = get_field( 'payment_user', $paymentID );
+		$order_data['address'] = get_field( 'payment_address', $paymentID );
+		$order_data['payment_type'] = get_field( 'payment_type', $paymentID );
+		$order_data['phone'] = get_field( 'payment_phone', $paymentID );
+		$order_data['mail'] = get_field( 'payment_mail', $paymentID );
+		$order_data['info'] = wp_strip_all_tags( get_field( 'payment_info', $paymentID ) );
+		$order_data['payment'] = $paymentID;
+		return $order_data;
 	}
 
 	/**

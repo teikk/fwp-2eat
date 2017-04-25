@@ -81,39 +81,10 @@ class FWPR_Payment {
 		}
 		$before = get_field( 'payment_status',$post_id );		
 		$payment_products = get_post_meta( $post_id,'_fwpr_payment_products',true );
-		$order_data = array();
-		$order_data['user'] = get_field( 'payment_user', $post_id );
-		$order_data['address'] = get_field( 'payment_address', $post_id );
-		$order_data['payment_type'] = get_field( 'payment_type', $post_id );
-		$order_data['phone'] = get_field( 'payment_phone', $post_id );
-		$order_data['mail'] = get_field( 'payment_mail', $post_id );
-		$order_data['info'] = wp_strip_all_tags( get_field( 'payment_info', $post_id ) );
-		$order_data['payment'] = $post_id;
+				
+		$order_products = FWPR_Order::get_instance()->parseProducts($payment_products);		
+		$order_data = apply_filters( 'fwpr/payment/order-data', array(), $post_id );
 		
-		$order_products = array();
-		foreach ($payment_products as $key => $product) {
-			if( $product['variant'] !== 'false' ) {
-				$variant = FWPR_Cart::get_instance()->getVariant($product['product'],$product['variant']); 
-				$variant_text = $variant['name'].', posiłków:'. $variant['dinners'];
-				$price = $variant['price'];
-				$date = FWPR_Order::get_instance()->parseDates( $product['date'] );
-				$date = apply_filters( 'fwpr/dates_to_repeater', $date );
-			} else {
-				$variant_text = 'Brak, produkt prosty';
-				$isDiscounted = get_field('fwpr_product_discounted',$product['product']);
-				$price = (!$isDiscounted) ? get_field( 'fwpr_product_price', $product['product']) : get_field( 'fwpr_product_price_discount', $product['product']);
-				$date = array(
-					array('date' => '')
-					);
-			}
-			$order_products[] = array(
-				'product' => $product['product'],
-				'variant' => $variant_text,
-				'price' => $price,
-				'dates' => $date
-				);
-		}
-		$order_data = apply_filters( 'fwpr/payment/order-data', $order_data, $post_id );
 		FWPR_Order::get_instance()->create($order_products,$order_data);
 		update_post_meta( $post_id, '_fwpr_payment_order_created', true );
 		return $value;

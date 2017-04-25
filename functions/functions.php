@@ -18,6 +18,20 @@ function fwpr_sortCartDates($a,$b){
 	return $a - $b;
 }
 
+function fwpr_sortACFDates($a,$b){
+	if( is_array($a) ){
+		$a = $a['date'];
+	}
+	if( is_array($b) ){
+		$b = $b['date'];
+	}
+	$a = DateTime::createFromFormat('Ymd',$a);
+	$b = DateTime::createFromFormat('Ymd',$b);
+	$a = $a->getTimestamp();
+	$b = $b->getTimestamp();
+	return $a - $b;
+}
+
 function fwprSortByVariant($a, $b) {
   return strcmp($a['variant'], $b['variant']);
 }
