@@ -1,9 +1,7 @@
 <?php 
-
-
 add_action( 'plugins_loaded', array('FWPR_Cart','init') );
 /**
- * Class responsible for handling the cart funcitonality
+ * Class responsible for handling the cart functionality
  * Starts the session if it is not started yet
  * @since  1.0 Introduction
  */
@@ -40,7 +38,7 @@ class FWPR_Cart {
 		if( session_id() == '' && !isset($_SESSION) ) {
 			session_start();
 		}
-		if( empty( $_SESSION['fwpr_cart'] ) ) {			
+		if( empty( $_SESSION['fwpr_cart'] ) ) {
 			$_SESSION['fwpr_cart'] = $this->items;
 		}
 	}
@@ -77,30 +75,42 @@ class FWPR_Cart {
 
 	public function getItems(){
 		$user = get_current_user_id();
-		$this->items = $_SESSION['fwpr_cart'];
+		if( $user == 0 ) {
+			$this->items = $_SESSION['fwpr_cart'];
+		} else {
+			$userCart = get_user_meta($user,'_fwpr_cart',true);
+			if( empty( $userCart ) ) {
+				$userCart = array();
+			}
+			$this->items = $userCart;
+		}
 		
 	}
 
 	public function removeItem( $item_key ) {
 		unset($this->items[$item_key]);
 		$_SESSION['fwpr_cart'] = $this->items;
+		$user_id = get_current_user_id();
+		if( $user_id != 0 ) {
+			update_user_meta( $user_id, '_fwpr_cart', $this->items );
+		}
 	}
 
-	public function addItem($product_id, $variant, $date, $quantity = 1, $user_id = 0 ){
-		if( $user_id == 0 ) {
-			$user_id = get_current_user_id();
-		}
+	public function addItem($product_id, $variant, $date, $quantity = 1 ){
 		if( empty( $quantity ) ) {
 			$quantity = 1;
-		}
+		}		
 		for ($i=1; $i <= $quantity; $i++) { 
 			$_SESSION['fwpr_cart'][] = array(
 			'product' => $product_id,
 			'variant' => $variant,
 			'date' => $date
 			);
-		}	
-
+		}
+		$user_id = get_current_user_id();
+		if( $user_id != 0 ) {
+			update_user_meta( $user_id, '_fwpr_cart', $_SESSION['fwpr_cart'] );
+		}
 	}
 
 	public function getVariant($product_id, $variant) {
@@ -130,5 +140,9 @@ class FWPR_Cart {
 	public function clear(){
 		$this->items = array();
 		$_SESSION['fwpr_cart'] = $this->items;
+		$user_id = get_current_user_id();
+		if( $user_id != 0 ) {
+			update_user_meta( $user_id, '_fwpr_cart', $_SESSION['fwpr_cart'] );
+		}
 	}
 }
