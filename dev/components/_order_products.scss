@@ -1,0 +1,36 @@
+.fwpr-order-products {
+	&__wrap {
+		font-size: 0;
+	}
+	&__item {
+		font-size: 14px;
+		display: inline-block;
+		vertical-align: top;
+		width: 33.333%;
+		padding:15px;
+		border:1px solid #c3c3c3;
+		border-radius: 4px;
+		box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.17);
+		@media (max-width: 1200px){
+			width: 50%;
+		}
+		@media (max-width: 991px){
+			width: 33.333%;
+		}
+		@media (max-width: 767px){
+			width: 100%;
+		}
+	}
+	&__info {
+		&--bold {
+			font-weight: 700;
+		}
+	}
+	&__label {
+		font-weight: 700;
+	}
+	&__divider {
+		border-top:1px solid #c3c3c3;
+		margin:10px 0;
+	}
+}

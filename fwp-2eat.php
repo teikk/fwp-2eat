@@ -102,6 +102,8 @@ class FWPR_Food {
 		wp_enqueue_script( 'fwpr-app' );
 
 		wp_enqueue_style( 'fwpr-bd-css', FWPR_URI . 'assets/datepicker.css' );
+
+		wp_enqueue_style( 'fwpr-main', FWPR_URI . 'assets/css/main.css' );
 		$options = FWPR_Options::get_instance()->get_options();
 		wp_localize_script( 'fwpr-plugins', 'fwpr', array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
