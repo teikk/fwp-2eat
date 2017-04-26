@@ -38,3 +38,10 @@
 		return ob_get_clean();
 	}
 	add_shortcode( 'fwpr_ending_orders', 'fwpr_ending_orders' );
+
+	function fwpr_user_orders(){
+		ob_start();
+		fwpr_template('user/orders');
+		return ob_get_clean();
+	}
+	add_shortcode( 'fwpr_user_orders', 'fwpr_user_orders' );
