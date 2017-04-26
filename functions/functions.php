@@ -143,7 +143,7 @@ function fwpr_listOrderProducts($orderID){
 	$totalPrice = 0;
 	if( !empty($products) ){
 		$productsHtml = apply_filters( 'fwpr/order/products/wrap/open', '<ul>' );
-		foreach ($products as $key => $product) {				 
+		foreach ($products as $key => $product) {
 			$productItem = '<li>'.get_the_title($product['product']).': '.$product['variant'].'</li>';
 			$productsHtml .= apply_filters( 'fwpr/order/products/item',$productItem );
 			$dates = $product['dates'];
@@ -165,4 +165,21 @@ function fwpr_listOrderProducts($orderID){
 		$productsHtml .= apply_filters( 'fwpr/order/products/wrap/close', '</ul>' );	
 	}
 	return $productsHtml;
+}
+
+
+
+function fwpr_setupReminderDate($current_date){
+	$reminder = get_field('fwpr_reminder_panel','option');
+	if( empty($reminder) ) {
+		$reminder = 1;
+	}
+	$current_date = DateTime::createFromFormat('d/m/Y', $current_date)->getTimestamp();
+	$nextDay = strtotime('+'.$reminder.' day',$current_date);
+	$nextDay = date( 'd/m/Y',$nextDay );
+	return $nextDay;
+}
+function fwpr_getTimestamp($date){
+	$date = DateTime::createFromFormat('d/m/Y', $date)->getTimestamp();
+	return $date;
 }
