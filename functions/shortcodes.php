@@ -45,3 +45,17 @@
 		return ob_get_clean();
 	}
 	add_shortcode( 'fwpr_user_orders', 'fwpr_user_orders' );
+
+	function fwpr_user_active_orders(){
+		ob_start();
+		fwpr_template('user/active-orders');
+		return ob_get_clean();
+	}
+	add_shortcode( 'fwpr_user_active_orders', 'fwpr_user_active_orders' );
+
+	function fwpr_user_ended_orders(){
+		ob_start();
+		fwpr_template('user/ended-orders');
+		return ob_get_clean();
+	}
+	add_shortcode( 'fwpr_user_ended_orders', 'fwpr_user_ended_orders' );
