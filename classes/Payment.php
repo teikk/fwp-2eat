@@ -85,8 +85,10 @@ class FWPR_Payment {
 		$order_products = FWPR_Order::get_instance()->parseProducts($payment_products);		
 		$order_data = apply_filters( 'fwpr/payment/order-data', array(), $post_id );
 		
-		FWPR_Order::get_instance()->create($order_products,$order_data);
+		$order = FWPR_Order::get_instance()->create($order_products,$order_data);
 		update_post_meta( $post_id, '_fwpr_payment_order_created', true );
+		update_post_meta( $order, '_fwpr_payment_id', $post_id );
+		do_action('fwpr/payment/statusChanged',$post_id,$order,$order_data);
 		return $value;
 	}
 
@@ -143,7 +145,11 @@ class FWPR_Payment {
 
 		update_post_meta( $payment_id, '_fwpr_payment_id', $payment_uniqid );
 		update_post_meta( $payment_id, '_fwpr_payment_products', FWPR_Cart::get_instance()->items );
-		update_field( 'payment_user', $data['firstname'] .' '.$data['lastname'], $payment_id );
+
+		$userName = $data['lastname'] .' '.$data['firstname'];
+		$userName = apply_filters( 'fwpr/payment/username', $userName, $data['firstname'], $data['lastname'] );
+
+		update_field( 'payment_user', $userName, $payment_id );
 		update_field( 'payment_price', $data['price'], $payment_id );
 		update_field( 'payment_type', $data['payment_type'], $payment_id );
 		update_field( 'payment_status', 'new', $payment_id );
@@ -169,6 +175,7 @@ class FWPR_Payment {
 		do_action( 'fwpr/payment/create',$payment_id,$data );
 		return $payment_id;
 	}
+	
 	public function pay($data){
 		$type = $data['payment_type'];
 		$response = apply_filters( 'fwpr/payment/pay/'.$type, $data );		
