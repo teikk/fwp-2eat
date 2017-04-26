@@ -158,5 +158,6 @@ class FWPR_Order {
 		update_field('field_58c7e58b81029',$products,$order_id);
 		do_action('fwpr/order/create',$data,$order_id);
 		$this->saveDates($order_id);
+		return $order_id;
 	}
 }
