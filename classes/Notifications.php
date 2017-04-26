@@ -60,13 +60,13 @@ class FWPR_Notifications {
 		$message = str_replace('[order_mail]', $data['mail'], $message);
 		$message = str_replace('[order_phone]', $data['phone'], $message);
 
-		if( get_post_type($orderID) == 'fwpr_payments' ) {
+		$postType = get_post_type($orderID);
+		if( $postType == 'fwpr_payments' ) {
 			$payment_products = get_post_meta( $orderID,'_fwpr_payment_products',true );					
 			$products = FWPR_Order::get_instance()->parseProducts($payment_products);
 		} else {
 			$products = get_field('order_products',$orderID);
 		}
-		
 		$productsHtml = '';
 		$totalPrice = 0;
 		if( !empty($products) ){
@@ -77,7 +77,8 @@ class FWPR_Notifications {
 				$dates = $product['dates'];
 				if( !empty($dates) ) {
 					$totalPrice += $product['price'] * sizeof($dates);
-					if( get_post_type($orderID) == 'fwpr_payments' ) {
+					
+					if( $postType == 'fwpr_payments' ) {
 						usort($dates, 'fwpr_sortACFDates');						
 					} else {
 						usort($dates, 'fwpr_sortCartDates');
@@ -85,8 +86,8 @@ class FWPR_Notifications {
 					$datesHtml = apply_filters( 'fwpr/notification/date/wrap/open', '<ul>' );
 
 					foreach ($dates as $key => $date) {
-						if( get_post_type($orderID) == 'fwpr_payments' ) {
-							$dateFormatted = $date['date'];
+						$dateFormatted = $date['date'];
+						if( $postType == 'fwpr_payments' ) {
 							$dateFormatted = DateTime::createFromFormat('Ymd',$dateFormatted);
 							$dateFormatted = $dateFormatted->format('d/m/Y');
 						}
