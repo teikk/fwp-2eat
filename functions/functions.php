@@ -91,7 +91,7 @@ function fwpr_get_delivery_area(){
 }
 
 function fwpr_payment_label($type) {
-	$types = FWPR_Payment::get_instance()->types;
+	$types = FWPR_Payment::get_instance()->getTypes();
 	$types = apply_filters( 'fwpr/payment/types', $types );
 	return $types[$type];
 }
@@ -117,3 +117,52 @@ function fwpr_reformatDate($value,$post_id,$field){
 	return $value;
 }
 
+
+function fwpr_getUserOrders(){
+	$user = get_current_user_id();
+	$args = array(
+		'post_type' => 'fwpr_order',
+		'posts_per_page' => -1,
+		'meta_query' => array(
+			array(
+				'key' => '_fwpr_userid',
+				'value' => $user,
+				'type' => 'NUMERIC',
+				'compare' => '='
+				)			
+			)
+		);
+	$args = apply_filters( 'fwpr/user/orders/args', $args );
+
+	return new WP_Query($args);
+}
+
+
+function fwpr_listOrderProducts($orderID){
+	$products = get_field('order_products',$orderID);
+	$totalPrice = 0;
+	if( !empty($products) ){
+		$productsHtml = apply_filters( 'fwpr/order/products/wrap/open', '<ul>' );
+		foreach ($products as $key => $product) {				 
+			$productItem = '<li>'.get_the_title($product['product']).': '.$product['variant'].'</li>';
+			$productsHtml .= apply_filters( 'fwpr/order/products/item',$productItem );
+			$dates = $product['dates'];
+			if( !empty($dates) ) {
+				$totalPrice += $product['price'] * sizeof($dates);
+				usort($dates, 'fwpr_sortCartDates');
+
+				$datesHtml = apply_filters( 'fwpr/order/date/wrap/open', '<ul>' );
+				foreach ($dates as $key => $date) {
+					$dateFormatted = $date['date'];
+					$dateItem = '<li>'.$dateFormatted.'</li>';
+					$datesHtml .= apply_filters( 'fwpr/order/date/item', $dateItem );
+				}
+
+				$datesHtml .= apply_filters( 'fwpr/order/date/wrap/end', '</ul>' );
+				$productsHtml .= $datesHtml;
+			}
+		}
+		$productsHtml .= apply_filters( 'fwpr/order/products/wrap/close', '</ul>' );	
+	}
+	return $productsHtml;
+}
