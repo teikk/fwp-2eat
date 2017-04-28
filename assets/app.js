@@ -1,4 +1,10 @@
 (function($){
+	$('.fwpr-reorder').click(function(event){
+		event.preventDefault();
+		var id = $(this).data('id');
+		$('body').fwpr('reorderItems',{data:id});
+	});
+
 	$('.fwpr-add-to-cart').submit(function(event) {
 		event.preventDefault();
 		var formdata = $(this).serialize();

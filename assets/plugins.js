@@ -16,6 +16,18 @@
 					$(document).triggerHandler('fwpr/cart/itemAdded',response);
 				});
 			},
+			reorderItems : function(){
+				$(document).triggerHandler('fwpr/action/start');
+				$.post( fwpr.ajaxurl, {
+					action: 'fwpr_cart',
+					method: 'reorderItems', 
+					data:args.data
+				},
+				function(response){
+					console.log(response);
+					$(document).triggerHandler('fwpr/cart/itemAdded',response);
+				});
+			},
 			/**
 			 * Removes item from cart
 			 */

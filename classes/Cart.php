@@ -66,6 +66,14 @@ class FWPR_Cart {
 			case 'showCart':
 				fwpr_template('cart/cart-content');
 				break;
+			case 'reorderItems';
+				$products = get_post_meta($_POST['data'],'_fwpr_payment_products',true);
+				$_SESSION['fwpr_cart'] = $products;
+				$user_id = get_current_user_id();
+				if( $user_id != 0 ) {
+					update_user_meta( $user_id, '_fwpr_cart', $_SESSION['fwpr_cart'] );
+				}
+				break;
 			default:
 				# code...
 				break;
