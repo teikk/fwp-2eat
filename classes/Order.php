@@ -25,7 +25,7 @@ class FWPR_Order {
 		add_filter( 'acf/save_post', array($instance,'manualCreation') );
 		add_filter( 'acf/update_value/name=order_products', array($instance,'datesChanged'), 9999, 3 );
 
-		add_filter('fwpr/payment/order-data', array($instance,'orderData'), 10, 1);
+		//add_filter('fwpr/payment/order-data', array($instance,'orderData'), 10, 1);
 	}
 	public function manualCreation($post_id){
 		if( get_post_type($post_id) != 'fwpr_order' ) return;
@@ -93,7 +93,7 @@ class FWPR_Order {
 		$order_data['mail'] = get_field( 'payment_mail', $paymentID );
 		$order_data['info'] = wp_strip_all_tags( get_field( 'payment_info', $paymentID ) );
 		$order_data['payment'] = $paymentID;
-		return $order_data;
+		return apply_filters( 'fwpr/payment/order-data', $order_data, $paymentID );
 	}
 
 	/**
@@ -132,7 +132,17 @@ class FWPR_Order {
 		update_post_meta( $post_id, '_fwpr_order_dates', $order_dates );
 	}
 
+	public function prepareOrder($paymentID){
+		$payment_products = get_post_meta( $paymentID,'_fwpr_payment_products',true );
 
+		$order_products = $this->parseProducts($payment_products);
+		$order_data = $this->orderData($paymentID);
+		$order = $this->create($order_products,$order_data);
+
+		update_post_meta( $paymentID, '_fwpr_payment_order_created', true );
+		update_post_meta( $order, '_fwpr_payment_id', $paymentID );
+		return array( 'order'=>$order, 'order_data' => $order_data );
+	}
 
 	/**
 	 * Create order post

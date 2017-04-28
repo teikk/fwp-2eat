@@ -92,7 +92,6 @@ function fwpr_get_delivery_area(){
 
 function fwpr_payment_label($type) {
 	$types = FWPR_Payment::get_instance()->getTypes();
-	$types = apply_filters( 'fwpr/payment/types', $types );
 	return $types[$type];
 }
 
@@ -190,4 +189,10 @@ function fwpr_getPaymentStatus($orderID){
 	$statusField = get_field_object('payment_status',$paymentID);
 	$status = get_field('payment_status',$paymentID);
 	return $statusField['choices'][$status];
+}
+
+
+add_action( 'fwpr/payment/id/completed/cash','fwp_driver_payment',10,1 );
+function fwp_driver_payment($paymentID){
+	update_field('payment_status','completed',$paymentID);
 }

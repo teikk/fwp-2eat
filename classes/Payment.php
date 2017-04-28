@@ -26,6 +26,7 @@ class FWPR_Payment {
 		$instance = self::get_instance();
 		add_filter('acf/load_field/key=field_58c7e3a05f712', array($instance,'registerTypes') );
 		add_filter('acf/load_field/key=field_58c7cd04e2960', array($instance,'registerTypes') );
+
 		add_action( 'fwpr/payment-select', array( $instance,'select' ) );
 		add_action( 'fwpr/payment/completed', array( $instance,'processCompleted' ) );
 		add_filter( 'acf/update_value/name=payment_status', array($instance,'statusChanged'), 10, 3 );
@@ -56,13 +57,6 @@ class FWPR_Payment {
 		return apply_filters( 'fwpr/payment/types', $this->types );
 	}
 
-	public function default_types(){
-		$this->types = array(
-		'cash' => __('Gotówka','fwpr'),
-		'transfer' => __('Przelew','fwpr'),
-		);
-	}
-
 	/**
 	 * Hook into acf/update_value
 	 * If payment status changed to completed create new order 
@@ -79,16 +73,9 @@ class FWPR_Payment {
 		if( $value != 'completed' ) {
 			return $value;
 		}
-		$before = get_field( 'payment_status',$post_id );		
-		$payment_products = get_post_meta( $post_id,'_fwpr_payment_products',true );
-				
-		$order_products = FWPR_Order::get_instance()->parseProducts($payment_products);		
-		$order_data = apply_filters( 'fwpr/payment/order-data', array(), $post_id );
-		
-		$order = FWPR_Order::get_instance()->create($order_products,$order_data);
-		update_post_meta( $post_id, '_fwpr_payment_order_created', true );
-		update_post_meta( $order, '_fwpr_payment_id', $post_id );
-		do_action('fwpr/payment/statusChanged',$post_id,$order,$order_data);
+		$before = get_field( 'payment_status',$post_id );	
+		$order = FWPR_Order::get_instance()->prepareOrder($post_id);
+		do_action('fwpr/payment/statusChanged',$post_id,$order['order'],$order['order_data']);
 		return $value;
 	}
 
