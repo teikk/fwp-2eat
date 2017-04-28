@@ -127,17 +127,19 @@ class FWPR_Payment {
 		echo $select;
 	}
 	public function make_payment($data){
+		$data['firstname'] = sanitize_text_field( $data['firstname'] );
+		$data['lastname'] = sanitize_text_field( $data['lastname'] );
+
 		$payment_uniqid = md5(uniqid());
 		$payment_id = wp_insert_post( array(
 			'post_type' => 'fwpr_payments',
-			'post_title' => '['.current_time( 'd-m-Y H:i' ).'] '.$payment_uniqid,
+			'post_title' => '['.current_time( 'd-m-Y H:i' ).'] '.$data['firstname'].' '.$data['lastname'],
 			'post_status' => 'publish'
-			) );		
+			) );
+
 		/**
 		 * Sanitize all data before saving
 		 */
-		$data['firstname'] = sanitize_text_field( $data['firstname'] );
-		$data['lastname'] = sanitize_text_field( $data['lastname'] );
 		$data['payment_type'] = sanitize_text_field( $data['payment_type'] );
 		$data['phone'] = sanitize_text_field( $data['phone'] );
 		$data['email'] = sanitize_email( $data['email'] );
@@ -188,6 +190,7 @@ class FWPR_Payment {
 
 		do_action( 'fwpr/payment/completed/'.$data['payment_type'], $data );		
 		do_action( 'fwpr/payment/completed', $data );
+		do_action( 'fwpr/payment/id/completed/'.$data['payment_type'], $payment_id );
 		return $response = array(
 			'redirect' => fwpr_returnUrl()
 			);
