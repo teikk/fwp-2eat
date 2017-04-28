@@ -29,6 +29,15 @@
 	&__label {
 		font-weight: 700;
 	}
+	&__status-label {
+		font-size: 10px;
+		&:before {
+			content:'(';
+		}
+		&:after {
+			content:')';
+		}
+	}
 	&__divider {
 		border-top:1px solid #c3c3c3;
 		margin:10px 0;
