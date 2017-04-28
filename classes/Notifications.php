@@ -38,11 +38,16 @@ class FWPR_Notifications {
 	}
 
 	public function userNotification($data,$orderID){
+		$notified = get_post_meta( $orderID, '_fwpr_order_notified', true );
+		if( $notified ) return;
 		$subject = get_field('fwpr_created_subject','option');
 		$message = get_field('fwpr_created_message','option');
 
 		$message = $this->prepareMessage($message, $data, $orderID);
-		$this->sendMail($data['mail'],$subject,$message);
+		$sent = $this->sendMail($data['mail'],$subject,$message);
+		if( $sent ) {
+			update_post_meta( $orderID, '_fwpr_order_notified', true );
+		}
 	}
 
 	public function adminNotification($data,$orderID){
@@ -126,7 +131,7 @@ class FWPR_Notifications {
 
 		$headers = apply_filters( 'fwpr/notification/mail/headers', $headers );
 		if( !empty( $to ) || !empty( $sender ) ) {
-			wp_mail( $to, $subject, $message, $headers );
+			return wp_mail( $to, $subject, $message, $headers );
 		}
 	}
 
