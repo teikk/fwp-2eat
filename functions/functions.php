@@ -183,3 +183,11 @@ function fwpr_getTimestamp($date){
 	$date = DateTime::createFromFormat('d/m/Y', $date)->getTimestamp();
 	return $date;
 }
+
+
+function fwpr_getPaymentStatus($orderID){
+	$paymentID = get_post_meta($orderID, '_fwpr_payment_id', true);
+	$statusField = get_field_object('payment_status',$paymentID);
+	$status = get_field('payment_status',$paymentID);
+	return $statusField['choices'][$status];
+}
