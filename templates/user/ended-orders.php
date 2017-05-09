@@ -60,8 +60,7 @@
 								<?php the_field('order_info',$post->ID); ?>
 							</div>
 							<div class="fwpr-order-products__divider"></div>
-							<?php $paymentID = get_post_meta($post->ID, '_fwpr_payment_id', true); ?>
-							<button class="fwpr-order-products__button fwpr-reorder" data-id="<?php echo $paymentID; ?>"><?php _e('Ponów zamówienie','fwpr'); ?></button>
+							<a href="<?php echo get_permalink($row['product']); ?>" class="fwpr-order-products__button"><?php _e('Ponów zamówienie','fwpr'); ?></a>
 						</div>
 					<?php
 					}
