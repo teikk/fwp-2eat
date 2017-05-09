@@ -51,11 +51,18 @@ class FWPR_Notifications {
 	}
 
 	public function adminNotification($data,$orderID){
+		$notified = get_post_meta( $orderID, '_fwpr_order_admin_notified', true );
+		if( $notified ) return;
+
 		$subject = get_field('fwpr_new_order_subject','option');
 		$message = get_field('fwpr_new_order_message','option');
 		$message = $this->prepareMessage($message, $data, $orderID);
 		$to = get_field('fwpr_notification_getter','option');
-		$this->sendMail($to,$subject,$message);
+		$sent = $this->sendMail($to,$subject,$message);
+
+		if( $sent ) {
+			update_post_meta( $orderID, '_fwpr_order_admin_notified', true );
+		}
 	}
 
 	public function prepareMessage( $message, $data, $orderID) {
