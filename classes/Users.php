@@ -38,9 +38,6 @@ class FWPR_Users {
 
 	public function assignToOrder($paymentID, $orderID ) {
 		$paymentUser = get_post_meta( $paymentID, '_fwpr_userid', true );
-
-		error_log($paymentUser);
-		error_log($orderID);
 		update_post_meta( $orderID, '_fwpr_userid', $paymentUser );
 	}
 }
